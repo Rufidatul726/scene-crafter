@@ -1,0 +1,3291 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Everrage"
+run/main_scene="res://screens/splash/Splash.tscn"
+config/features=PackedStringArray("4.3")
+config/icon="res://icon.png"
+
+[autoload]
+
+Global="*res://global/Global.gd"
+GlobalCamera="*res://camera/Camera.tscn"
+Transitions="*res://transitions/Transitions.tscn"
+
+[display]
+
+window/size/viewport_width=160
+window/size/viewport_height=144
+window/size/window_width_override=480
+window/size/window_height_override=432
+window/stretch/mode="canvas_items"
+window/dpi/allow_hidpi=false
+
+[editor]
+
+movie_writer/movie_file="/Users/rob/Downloads/everrage.avi"
+
+[filesystem]
+
+import/blender/enabled=false
+
+[global]
+
+color=false
+
+[gui]
+
+common/drop_mouse_on_gui_input_disabled=true
+
+[layer_names]
+
+2d_physics/layer_1="Player"
+2d_physics/layer_2="Bullet"
+2d_physics/layer_3="Enemy"
+2d_physics/layer_4="Item"
+
+[physics]
+
+common/enable_pause_aware_picking=true
+
+[rendering]
+
+textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="mobile"
+environment/defaults/default_clear_color=Color(0.776471, 0.815686, 0.615686, 1)
+environment/defaults/default_environment="res://default_env.tres"
+environment/defaults/default_environment_color=Color(0.776471, 0.815686,extends Camera2D
+
+var screen_is_shaking := false
+
+@onready var screen_shake_timer := $ScreenShakeTimer as Timer
+
+
+func _process(_delta: float):
+	if screen_is_shaking:
+		offset = Vector2(randf_range(-1, 1), randf_range(-1, 1))
+	else:
+		offset = Vector2.ZERO
+
+
+func shake_screen():
+	screen_is_shaking = true
+
+	screen_shake_timer.start()
+
+
+func _on_ScreenShakeTimer_timeout():
+	screen_is_shaking = false
+[gd_scene load_steps=2 format=3 uid="uid://bo5igxfby2mct"]
+
+[ext_resource type="Script" path="res://camera/Camera.gd" id="1"]
+
+[node name="Camera" type="Camera2D"]
+position = Vector2(80, 72)
+position_smoothing_enabled = true
+script = ExtResource("1")
+
+[node name="ScreenShakeTimer" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+
+[connection signal="timeout" from="ScreenShakeTimer" to="." method="_on_ScreenShakeTimer_timeout"]
+[connection signal="timeout" from="ScreenShakeTimer" to="." method="_on_Sextends "res://enemies/enemy/Enemy.gd"
+
+
+func _process(delta: float):
+	super(delta)
+
+	if disabled:
+		return
+
+	if global_position.y >= player.position.y - player.size.y / 2 and velocity.x == 0:
+		if global_position.x > player.position.x:
+			velocity = Vector2(-speed * 2, 0)
+		else:
+			velocity = Vector2(speed * 2, 0)
+	elif global_position.y <= player.position.y + player.size.y / 2 and velocity.x == [gd_scene load_steps=5 format=3 uid="uid://b5si04vf4cxle"]
+
+[ext_resource type="Script" path="res://enemies/attack_from_side/AttackFromSide.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://c6cp8bec3bjsm" path="res://enemies/attack_from_side/attack_from_side.png" id="2"]
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="3"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 6.0
+
+[node name="AttackFromSide" instance=ExtResource("3")]
+script = ExtResource("1")
+can_shoot = true
+speed = 45
+value = 200
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("1")
+[ext_resource type="CollisionShape2D" uid="uid://d4t9p2class_name Bubble
+
+extends "res://enemies/enemy/Enemy.gd"
+
+
+func _process(delta: float):
+	super(delta)
+
+	if scale.y < 1:
+		velocity.y += speed * delta
+
+		if velocity.y > speed:
+			velocity.y = speed
+
+	if global_position.y > screen_size.y / 2 and scale.y == 1:
+		explode()
+
+
+func fall_apart():
+	if scale.y < 0.5:
+		return
+
+	for _i in range(0, 4 * scale.y):
+		var bubble := duplicate() as Bubble
+		var spread := 20 * scale.y
+
+		var rand_position := Vector2(randf_range(-spread, spread), randf_range(-spread, spread))
+
+		bubble.position = position + rand_position
+		bubble.scale *= 0.75
+		bubble.velocity = Vector2(randf_range(-spread, spread), randf_range(-spread, 0))
+
+		get_parent().call_deferred("add_child", bubble)
+
+
+func explode():
+	super()
+
+	fall_apart()
+[gd_scene load_steps=5 format=3 uid="uid://c0jx3c1o8rw47"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://bfut6y5d2hp34" path="res://enemies/bubble/bubble.png" id="2"]
+[ext_resource type="Script" path="res://enemies/bubble/Bubble.gd" id="3"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 7.0
+
+[node name="Bubble" instance=ExtResource("1")]
+script = ExtResource("3")
+speed = 20
+value = 10
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("1")
+offset = Vector2(0.0, 0.0)
+
+[node name="Sprite2Dclass_name Enemy
+
+extends Area2D
+
+const Bullet = preload("bullet/Bullet.tscn")
+const Explosion = preload("explosion/Explosion.tscn")
+
+@export var bullet_rotation := PI / 2
+@export var can_shoot := false
+@export var speed := 40
+@export var value := 100
+
+var disabled := true
+var velocity := Vector2(0, speed)
+
+@onready var collision_shape := $CollisionShape2D as CollisionShape2D
+@onready var player := get_node("/root/Level/Player") as Player
+@onready var screen_size := get_viewport_rect().size
+@onready var shot_timer := $ShotTimer as Timer
+@onready var size := ($Sprite2D as Sprite2D).texture.get_size()
+@onready var status_bar := get_node("/root/Level/StatusBar") as StatusBar
+
+
+func _process(delta: float):
+	if not disabled:
+		position += velocity * delta
+
+		if randf_range(0, 0.5) < delta:
+			shoot()
+
+	if global_position.y + size.y / 2 > status_bar.size.y and disabled:
+		collision_shape.disabled = false
+		disabled = false
+
+	if global_position.y - size.y / 2 > screen_size.y:
+		queue_free()
+
+
+func explode():
+	var explosion := Explosion.instantiate() as EnemyExplosion
+
+	explosion.position = position
+
+	get_parent().add_child(explosion)
+
+	queue_free()
+
+
+func shoot() -> EnemyBullet:
+	if not can_shoot:
+		return
+
+	if shot_timer.is_stopped():
+		shot_timer.start()
+	else:
+		return
+
+	var bullet := Bullet.instantiate() as EnemyBullet
+
+	bullet.position = position
+	bullet.rotation = bullet_rotation
+	bullet.scale = scale
+
+	get_parent().add_child(bullet)
+
+	return bullet
+[gd_scene load_steps=2 format=3 uid="uid://dk551jtgig1kg"]
+
+[ext_resource type="Script" path="res://enemies/enemy/Enemy.gd" id="1"]
+
+[node name="Enemy" type="Area2D"]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+disabled = true
+
+[node name="ShotTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+time_left = 0
+is_shooting = false
+is_shooting_sound = false
+
+[nodeclass_name EnemyBullet
+
+extends Area2D
+
+@export var speed := 100
+
+var velocity := Vector2(1, 0)
+
+@onready var collision_shape := $CollisionShape2D as CollisionShape2D
+@onready var sprite := $Sprite2D as Sprite2D
+
+
+func _process(delta: float):
+	position += velocity.rotated(rotation) * speed * delta
+
+
+func _on_VisibilityNotifier2D_screen_exited():
+	queue_free()
+
+
+func _on_Bullet_area_entered(area: Area2D):
+	if area is Player:
+		var player := area as Player
+
+		if not player.immortality:
+			player.explode()
+
+			queue_free()
+[gd_scene load_steps=4 format=3 uid="uid://0q2j36fmyssd"]
+
+[ext_resource type="Script" path="res://enemies/enemy/bullet/Bullet.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://2vmyivaxg5p6" path="res://enemies/enemy/bullet/bullet.png" id="2"]
+
+[sub_resource type="CapsuleShape2D" id="1"]
+radius = 2.0
+height = 4.0
+
+[node name="Bullet" type="Area2D"]
+z_index = -1
+rotation = 1.5708
+collision_layer = 2
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="area_entered" from="." to="." method="_on_Bullet_area_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]
+[connection signal="area_exited" from="." to="." method="_on_Bullet_areaclass_name EnemyExplosion
+
+extends Node2D
+
+@onready var animated_sprite := $AnimatedSprite2D as AnimatedSprite2D
+
+
+func _ready():
+	animated_sprite.play()
+
+	GlobalCamera.shake_screen()
+
+
+func _on_AnimatedSprite_animation_finished():
+	queue_free()
+[gd_scene load_steps=9 format=3 uid="uid://d3vd8sxwu8ver"]
+
+[ext_resource type="Texture2D" uid="uid://bnedx3l43ypfl" path="res://enemies/enemy/explosion/explosion.png" id="1"]
+[ext_resource type="Script" path="res://enemies/enemy/explosion/Explosion.gd" id="2"]
+[ext_resource type="AudioStream" uid="uid://cg3v0qiabtdvj" path="res://enemies/enemy/explosion/explosion.wav" id="3"]
+
+[sub_resource type="AtlasTexture" id="1"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="2"]
+atlas = ExtResource("1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="3"]
+atlas = ExtResource("1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="4"]
+atlas = ExtResource("1")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("1")
+}, {
+"duration": 1.0,
+"texture": SubResource("2")
+}, {
+"duration": 1.0,
+"texture": SubResource("3")
+}, {
+"duration": 1.0,
+"texture": SubResource("4")
+}],
+"loop": false,
+"name": &"default",
+"speed": 15.0
+}]
+
+[node name="Explosion" type="Node2D"]
+script = ExtResource("2")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("5")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3")
+volume_db = -4.0
+autoplay = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="audio_finished" from="AudioStreamPlayer2D" to="." method="_extends "res://enemies/enemy/Enemy.gd"
+
+const TOTAL_TARGET_CHANGES := 3
+
+var target := Vector2.ZERO
+var target_changes := 0
+
+@onready var animation_player := $AnimationPlayer as AnimationPlayer
+
+
+func _ready():
+	animation_player.play("Spin")
+
+	change_target()
+
+
+func _process(delta: float):
+	super(delta)
+
+	if global_position.y > 20:
+		velocity = global_position.direction_to(target) * speed
+
+	if target_changes > TOTAL_TARGET_CHANGES:
+		velocity = Vector2(0, speed)
+	elif global_position.distance_to(target) < 1:
+		change_target()
+
+
+func change_target():
+	target_changes += 1
+
+	target = Vector2(
+		randf_range(size.x, screen_size.x - size.x),
+		randf_range(screen_size.y / 3, screen_size.y - size.y)
+	)
+[gd_scene load_steps=8 format=3 uid="uid://banlyno600o0x"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1"]
+[ext_resource type="Script" path="res://enemies/flying_around/FlyingAround.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dh21aih5t4s8f" path="res://enemies/flying_around/flying_around.png" id="3"]
+
+[sub_resource type="CapsuleShape2D" id="1"]
+radius = 2.82843
+height = 15.5563
+
+[sub_resource type="Animation" id="2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="3"]
+resource_name = "Spin"
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [0.0, 360.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3sa2o"]
+_data = {
+"RESET": SubResource("2"),
+"Spin": SubResource("3")
+}
+
+[node name="FlyingAround" instance=ExtResource("1")]
+script = ExtResource("2")
+can_shoot = true
+speed = 30
+value = 250
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3")
+
+[node name="CollisionShape2D" parent="." index="1"]
+rotation = 0.785398
+shape = SubResource("1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." index="3"]
+libraries = {
+"": SubResource("AnimationLibrary_3sa2o")
+}
+extends "res://enemies/enemy/Enemy.gd"
+
+var angle := PI
+var direction := 0
+var radius := 80
+
+
+func _ready():
+	direction = 1 if position.x / screen_size.x > 0.5 else -1
+
+
+func _process(delta: float):
+	super(delta)
+
+	if disabled:
+		return
+
+	if angle > -8:
+		angle -= PI * delta
+
+	position.x += sin(angle * direction) * radius * delta
+	position.y += cos(angle * direction) * radius * delta
+[gd_scene load_steps=5 format=3 uid="uid://dir1mak777gfs"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://do3k58whmufad" path="res://enemies/loop/loop.png" id="2"]
+[ext_resource type="Script" path="res://enemies/loop/Loop.gd" id="3"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 7.0
+
+[node name="Loop" instance=ExtResource("1")]
+script = ExtResource("3")
+can_shoot = true
+speed = 50
+value = 250
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("1")
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kgclass_name MiniBoss
+
+extends Node2D
+
+const Explosion = preload("explosion/Explosion.tscn")
+const TOTAL_TARGET_CHANGES := 6
+
+@export var speed := 40
+@export var value := 100
+
+var disabled := true
+var target := Vector2.ZERO
+var target_changes := 0
+var velocity := Vector2(0, speed)
+
+@onready var background := get_node("/root/Level/Background") as Background
+@onready var hearts := $Hearts as Node2D
+@onready var screen_size := get_viewport_rect().size
+@onready var size := ($Sprite2D as Sprite2D).texture.get_size()
+
+
+func _ready():
+	change_target()
+
+	for heart in hearts.get_children():
+		heart.connect("hit", Callable(self, "heart_hit"))
+
+
+func _process(delta: float):
+	if not disabled:
+		position += velocity * delta
+
+	if global_position.y > 30 and disabled:
+		background.stop_scrolling()
+		disabled = false
+
+	if target_changes > TOTAL_TARGET_CHANGES:
+		velocity = velocity.lerp(Vector2(0, speed), delta)
+	elif global_position.distance_to(target) < 1:
+		change_target()
+	else:
+		velocity = velocity.lerp(global_position.direction_to(target) * speed, delta)
+
+	if global_position.y - size.y / 2 > screen_size.y:
+		background.restore_scroll()
+
+		queue_free()
+
+
+func change_target():
+	target_changes += 1
+
+	target = Vector2(
+		randf_range(size.x, screen_size.x - size.x),
+		randf_range(screen_size.y / 3, screen_size.y - size.y * 2.5)
+	)
+
+
+func explode():
+	var explosion := Explosion.instantiate() as MiniBossExplosion
+
+	explosion.position = position
+
+	get_parent().add_child(explosion)
+
+	background.restore_scroll()
+
+	queue_free()
+
+
+func heart_hit():
+	var all_destroyed := true
+
+	for heart in hearts.get_children() as Array[MiniBossHeart]:
+		if !heart.destroyed:
+			all_destroyed = false
+			break
+
+	if all_destroyed:
+		explode()
+[gd_scene load_steps=2 format=3 uid="uid://dsncrs8chfslf"]
+
+[ext_resource type="Script" path="res://enemies/mini_boss/MiniBoss.gd" id="1_dqte2"]
+
+[node name="MiniBoss" type="Area2D"]
+collision_layer = 4
+script = ExtResource("1_dqte2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+
+[node name="Hearts" type="Node2D" parent="."]
+z_index = 1
+
+[node name="Heart" type="Node2D" parent="Heclass_name MiniBossBarrel
+
+extends Node2D
+
+const Bullet = preload("bullet/Bullet.tscn")
+
+@onready var mini_boss := get_node("../..") as MiniBoss
+@onready var shot_timer := $ShotTimer as Timer
+@onready var target := $Target as Marker2D
+
+
+func _process(delta: float):
+	if not mini_boss.disabled:
+		if randf_range(0, 0.5) < delta:
+			shoot()
+
+
+func shoot():
+	if shot_timer.is_stopped():
+		shot_timer.start()
+	else:
+		return
+
+	var bullet := Bullet.instantiate() as MiniBossBullet
+
+	bullet.position = position + target.position
+
+	get_parent().add_child(bullet)
+	bullet.global_position = position
+	bullet.rotation = target.rotation
+
+	bullet.speed = 1[gd_scene load_steps=3 format=3 uid="uid://cfjbiwslgna66"]
+
+[ext_resource type="Script" path="res://enemies/mini_boss/barrel/Barrel.gd" id="1_n04rt"]
+[ext_resource type="Texture2D" uid="uid://b2i878a27qe4x" path="res://enemies/mini_boss/barrel/barrel.png" id="1_uac11"]
+
+[node name="Barrel" type="Node2D"]
+script = ExtResource("1_n04rt")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_uac11")
+
+[node name="Target" type="Marker2D" parent="."]
+position = Vector2(0, 3)
+
+[node name="ShotTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+[ext_resource type="Sound" uid="uid://s3v5w1d8fclass_name MiniBossBullet
+
+extends Area2D
+
+@export var speed := 100
+
+
+func _process(delta: float):
+	position.y += speed * delta
+
+
+func _on_visible_on_screen_notifier_2d_screen_exited():
+	queue_free()
+
+
+func _on_area_entered(area: Area2D):
+	if area is Player:
+		var player := area as Player
+
+		if not player.immortality:
+			player.explode()
+
+			queue_free()
+[gd_scene load_steps=4 format=3 uid="uid://t7k4orm12xmn"]
+
+[ext_resource type="Texture2D" uid="uid://ckpcl7paxl67p" path="res://enemies/mini_boss/barrel/bullet/bullet.png" id="1_7m3ih"]
+[ext_resource type="Script" path="res://enemies/mini_boss/barrel/bullet/Bullet.gd" id="1_78hiv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ib2tg"]
+radius = 2.0
+
+[node name="Bullet" type="Area2D"]
+collision_layer = 2
+script = ExtResource("1_78hiv")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_7m3ih")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ib2tg")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_visible_on_screen_notifier_2d_screen_exited"]
+[connection signal="area_activated" from="." to="." method="_on_area_activatedclass_name MiniBossExplosion
+
+extends Node2D
+
+@onready var animated_sprite := $AnimatedSprite2D as AnimatedSprite2D
+
+
+func _ready():
+	animated_sprite.play()
+
+	GlobalCamera.shake_screen()
+
+
+func _on_animated_sprite_2d_animation_finished():
+	queue_free()
+[gd_scene load_steps=9 format=3 uid="uid://crwp7noih1eyl"]
+
+[ext_resource type="Texture2D" uid="uid://cvesis3lxixfp" path="res://enemies/mini_boss/explosion/explosion.png" id="1_vrieo"]
+[ext_resource type="Script" path="res://enemies/mini_boss/explosion/Explosion.gd" id="1_x3566"]
+[ext_resource type="AudioStream" uid="uid://d34b3u8ylrhlf" path="res://enemies/mini_boss/explosion/explosion.wav" id="2_oi6u0"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4jxqp"]
+atlas = ExtResource("1_vrieo")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5fypa"]
+atlas = ExtResource("1_vrieo")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pxeq6"]
+atlas = ExtResource("1_vrieo")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v1uti"]
+atlas = ExtResource("1_vrieo")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_ga42c"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4jxqp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5fypa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pxeq6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v1uti")
+}],
+"loop": false,
+"name": &"default",
+"speed": 15.0
+}]
+
+[node name="Explosion" type="Node2D"]
+script = ExtResource("1_x3566")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_ga42c")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_oi6u0")
+volume_db = -4.0
+autoplay = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_onclass_name MiniBossHeart
+
+extends Area2D
+
+signal hit
+
+var destroyed := false
+
+@onready var mini_boss := get_node("../..") as MiniBoss
+
+
+func _on_area_entered(area: Area2D):
+	if mini_boss.disabled or destroyed:
+		return
+
+	var tween := create_tween()
+
+	tween.tween_property(self, "modulate:a", modulate.a - 0.25, 0.25)
+
+	tween.tween_callback(tween_modulate_a_finished)
+
+	area.queue_free()
+
+
+func tween_modulate_a_finished():
+	if modulate.a <= 0:
+		destroyed = true
+
+	emit_signal("hit")
+[gd_scene load_steps=4 format=3 uid="uid://cu40475qc1cua"]
+
+[ext_resource type="Texture2D" uid="uid://crpdpgq71qvao" path="res://enemies/mini_boss/heart/heart.png" id="1_ccvbb"]
+[ext_resource type="Script" path="res://enemies/mini_boss/heart/Heart.gd" id="1_u8a2e"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_aws8o"]
+radius = 4.0
+
+[node name="Heart" type="Area2D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_u8a2e")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_ccvbb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_aws8o")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="area_entered" from="." to="Heart" method="_on_area_enterextends "res://enemies/mini_boss/MiniBoss.gd"
+func _ready():
+	pass
+func _on_Boss_body_entered(body):
+	if body.is_in[gd_scene load_steps=7 format=3 uid="uid://os3ea50ga374"]
+
+[ext_resource type="PackedScene" uid="uid://dsncrs8chfslf" path="res://enemies/mini_boss/MiniBoss.tscn" id="1_deakp"]
+[ext_resource type="Texture2D" uid="uid://cowu5w7y8cvyr" path="res://enemies/mini_boss_1/mini_boss_1.png" id="1_l2oel"]
+[ext_resource type="Script" path="res://enemies/mini_boss_1/MiniBoss1.gd" id="2_dwf7h"]
+[ext_resource type="PackedScene" uid="uid://cfjbiwslgna66" path="res://enemies/mini_boss/barrel/Barrel.tscn" id="4_7kkk3"]
+[ext_resource type="PackedScene" uid="uid://cu40475qc1cua" path="res://enemies/mini_boss/heart/Heart.tscn" id="5_ps81e"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wkptl"]
+radius = 14.0
+height = 32.0
+
+[node name="MiniBoss1" instance=ExtResource("1_deakp")]
+script = ExtResource("2_dwf7h")
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("1_l2oel")
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0, 2)
+shape = SubResource("CapsuleShape2D_wkptl")
+
+[node name="Barrels" type="Node2D" parent="." index="2"]
+
+[node name="Barrel" parent="Barrels" index="0" instance=ExtResource("4_7kkk3")]
+position = Vector2(-8, 15)
+
+[node name="Barrel2" parent="Barrels" index="1" instance=ExtResource("4_7kkk3")]
+position = Vector2(8, 15)
+
+[node name="Heart" parent="Hearts" index="0" instance=ExtResource("5_ps81e")]
+z_index = 1
+position = Vector2(0, 4)
+radius = 8.0
+extends "res://enemies/enemy/Enemy.gd"
+
+var timer := 0.0
+
+
+func _process(delta: float):
+	super(delta)
+
+	timer += delta * 3
+
+	velocity = Vector2(sin(timer) * 50, speed)
+[gd_scene load_steps=5 format=3 uid="uid://ber84g8sbgx5h"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1_gyhfv"]
+[ext_resource type="Texture2D" uid="uid://76j8qs8qmum4" path="res://enemies/pendulum/pendulum.png" id="2_1v8ve"]
+[ext_resource type="Script" path="res://enemies/pendulum/Pendulum.gd" id="2_usqrf"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5eqxh"]
+radius = 6.0
+
+[node name="Pendulum" instance=ExtResource("1_gyhfv")]
+script = ExtResource("2_usqrf")
+can_shoot = true
+speed = 30
+value = 150
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2_1v8ve")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("CircleShape2D_5eqxh")
+[ext_resource type="CollisionShape2D" uid="uid://g8v8v8extends "res://enemies/enemy/Enemy.gd"
+
+@onready var background := get_node("/root/Level/Background") as Background
+
+
+func _ready():
+	velocity = Vector2.ZERO
+
+
+func _process(delta: float):
+	super(delta)
+
+	position.y -= background.border_speed * delta
+	if position.y < -background.border_height:
+		queue_free()
+[gd_scene load_steps=5 format=3 uid="uid://7of0mf0srsqy"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1_q4wev"]
+[ext_resource type="Script" path="res://enemies/shooting_side/ShootingSide.gd" id="2_i6wvv"]
+[ext_resource type="Texture2D" uid="uid://xlwtbxkt23bx" path="res://enemies/shooting_side/shooting_side.png" id="3_1olqm"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2ty7j"]
+size = Vector2(8, 2)
+
+[node name="ShootingSide" instance=ExtResource("1_q4wev")]
+script = ExtResource("2_i6wvv")
+can_shoot = true
+speed = 0
+value = 210
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("3_1olqm")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("RectangleShape2D_2ty7j")
+[ext_resource type="CollisionShape2D" uid="uid://m6v6m6extends Node2D
+
+const SnakePart = preload("SnakePart.tscn")
+
+@export var quantity := 10
+
+var direction := 0
+var disabled := true
+
+@onready var screen_size := get_viewport_rect().size
+@onready var status_bar := get_node("/root/Level/StatusBar") as StatusBar
+@onready var timer := $Timer as Timer
+
+
+func _process(_delta: float):
+	if global_position.y > status_bar.size.y and disabled:
+		dispatch_snake_part()
+
+		timer.start()
+
+		disabled = false
+
+	change_direction_randomly()
+
+
+func change_direction_randomly():
+	if randf_range(0, 10) > 7:
+		var new_direction := randi() % 3 - 1
+
+		while new_direction == direction:
+			new_direction = randi() % 3 - 1
+
+		direction = new_direction
+
+
+func dispatch_snake_part():
+	var snake_part := SnakePart.instantiate() as SnakePart
+	var snake_parts := get_tree().get_nodes_in_group(name)
+
+	snake_part.add_to_group(name)
+
+	if snake_parts.size() > 0:
+		var last_snake_part := snake_parts[-1] as SnakePart
+		var new_position := last_snake_part.position
+
+		match direction:
+			-1:
+				new_position.x -= last_snake_part.size.x
+			0:
+				new_position.y += last_snake_part.size.y
+			1:
+				new_position.x += last_snake_part.size.x
+
+		snake_part.position = new_position
+	else:
+		snake_part.position = position
+
+	snake_part.position.x = ceili(snake_part.position.x)
+	snake_part.position.y = ceili(snake_part.position.y)
+
+	get_parent().add_child(snake_part)
+
+
+func _on_Timer_timeout():
+	if quantity > 0:
+		quantity -= 1
+
+		dispatch_snake_part()
+	else:
+		timer.stop()
+		get_parent().remove_child(snake_part)
+		queue_free()
+[gd_scene load_steps=2 format=3 uid="uid://o02lrmhiybs0"]
+
+[ext_resource type="Script" path="res://enemies/snake/Snake.gd" id="1"]
+
+[node name="Snake" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.25
+
+[connection signal="timeout" from="Timer" to="." method="_on_Timer_timeout"]
+[connection signal="timeout" from="Snake" to="." method="_on_Snake_timeoutclass_name SnakePart
+
+extends "res://enemies/enemy/Enemy.gd"
+export var body : Body2D
+
+var can_eat : bool = false
+
+func _ready[gd_scene load_steps=5 format=3 uid="uid://b71phy64b3esl"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://doo5xdn38h2nm" path="res://enemies/snake/snake_part.png" id="2"]
+[ext_resource type="Script" path="res://enemies/snake/SnakePart.gd" id="3"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(8, 8)
+
+[node name="SnakePart" groups=["snake_parts"] instance=ExtResource("1")]
+script = ExtResource("3")
+speed = 30
+value = 20
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("1")
+radius = 1
+
+[node name="Sprite2D" parent="." index="2"]
+textureextends "res://enemies/enemy/Enemy.gd"
+
+
+func _process(delta: float):
+	super(delta)
+
+	if disabled:
+		return
+
+	rotate(delta)
+[gd_scene load_steps=5 format=3 uid="uid://cuusbo3d2aebt"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://bbhhvffq4ipav" path="res://enemies/straight/straight.png" id="2"]
+[ext_resource type="Script" path="res://enemies/straight/Straight.gd" id="3"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 8.0
+
+[node name="Straight" instance=ExtResource("1")]
+script = ExtResource("3")
+can_shoot = true
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("2")
+
+[node name="CollisionShape2D" parent="." index="1"]
+position = Vector2(0, 1)
+shape = SubResource("1")
+shape.offset = Vector2(0, 0)
+shape.radius = 8.0
+
+[nodeextends "res://enemies/enemy/Enemy.gd"
+
+@onready var barrel := $Barrel as Node2D
+
+
+func _ready():
+	velocity = Vector2.ZERO
+
+
+func _process(delta: float):
+	super(delta)
+
+	barrel.rotation = lerp_angle(barrel.rotation, get_angle_to(player.position), 0.05)
+
+
+func shoot():
+	var bullet := super()
+
+	if bullet:
+		bullet.rotation = barrel.rotation
+		bullet.velocity = barrel.velocity
+		bullet.global_position = barrel.global_position
+		b[gd_scene load_steps=6 format=3 uid="uid://djp5ht5mvlcll"]
+
+[ext_resource type="PackedScene" uid="uid://dk551jtgig1kg" path="res://enemies/enemy/Enemy.tscn" id="1_6rs8e"]
+[ext_resource type="Script" path="res://enemies/turret/Turret.gd" id="1_ftxeu"]
+[ext_resource type="Texture2D" uid="uid://d4h05nhqptg7j" path="res://enemies/turret/turret.png" id="1_rwlhu"]
+[ext_resource type="Texture2D" uid="uid://bq757fbrwct2f" path="res://enemies/turret/barrel.png" id="2_1spnf"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_w8pr6"]
+radius = 4.0
+
+[node name="Turret" instance=ExtResource("1_6rs8e")]
+script = ExtResource("1_ftxeu")
+can_shoot = true
+speed = 0
+value = 130
+
+[node name="Sprite2D" parent="." index="0"]
+texture = ExtResource("1_rwlhu")
+
+[node name="CollisionShape2D" parent="." index="1"]
+shape = SubResource("CircleShape2D_w8pr6")
+
+[node name="Barrel" type="Node2D" parent="." index="3"]
+
+[node name="Sprite2D" type="Sprite2D" parent="Barrel" index="0"]
+texture = ExtResource("2_1spnf")
+rotation = 0
+
+[node name="Bullet2D" parent="Barrel" index="1extends Node
+
+signal score_changed
+
+var _score := 0
+
+
+func add_score(value: int):
+	_score += value
+
+	emit_signal("score_changed")
+
+
+func get_score() -> int:
+	return _score
+
+
+func reset():
+	_score = 0
+class_name ItemUp
+
+extends Area2D
+
+const Explosion = preload("explosion/Explosion.tscn")
+
+@export var speed := 30
+
+var disabled := true
+var is_open := false
+var is_opening := false
+var velocity := Vector2(0, speed)
+
+@onready var animation_player := $AnimationPlayer as AnimationPlayer
+@onready var closed_sprite := $ClosedSprite as Sprite2D
+@onready var collision_shape := $CollisionShape2D as CollisionShape2D
+@onready var open_sprite := $OpenSprite as Sprite2D
+@onready var screen_size := get_viewport_rect().size
+@onready var size := ($ClosedSprite as Sprite2D).texture.get_size()
+@onready var status_bar := get_node("/root/Level/StatusBar") as StatusBar
+
+
+func _process(delta: float):
+	if not disabled:
+		position += velocity * delta
+
+	if global_position.y + size.y / 2 > status_bar.size.y and disabled:
+		collision_shape.disabled = false
+		disabled = false
+
+	if global_position.y - size.y / 2 > screen_size.y:
+		queue_free()
+
+
+func explode():
+	var explosion := Explosion.instantiate() as ItemUpExplosion
+
+	explosion.position = position
+
+	get_parent().add_child(explosion)
+
+	queue_free()
+
+
+func open():
+	if is_opening or is_open:
+		return
+
+	var explosion := Explosion.instantiate() as ItemUpExplosion
+
+	explosion.position = position + Vector2(0, size.y / 4)
+
+	get_parent().add_child(explosion)
+
+	is_opening = true
+
+	animation_player.play("Opening")
+
+	await animation_player.animation_finished
+
+	is_open = true
+	is_opening = false
+	animation_player.play("Closed")
+	queue_free()
+
+
+func close():
+	if is_open:
+		return
+
+	var[gd_scene load_steps=7 format=3 uid="uid://od0ltbnj35k5"]
+
+[ext_resource type="Texture2D" uid="uid://b75p6hqe4b7tl" path="res://items/item_up/item_up.png" id="1"]
+[ext_resource type="Script" path="res://items/item_up/ItemUp.gd" id="2"]
+
+[sub_resource type="CircleShape2D" id="1"]
+radius = 6.0
+
+[sub_resource type="Animation" id="2"]
+resource_name = "Opening"
+length = 0.3
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClosedSprite:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, false]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ClosedSprite:modulate:r")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ClosedSprite:modulate:g")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ClosedSprite:modulate:b")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ClosedSprite:modulate:a")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 0, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("OpenSprite:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/6/type = "bezier"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("OpenSprite:modulate:r")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/7/type = "bezier"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("OpenSprite:modulate:g")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/8/type = "bezier"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("OpenSprite:modulate:b")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(1, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+tracks/9/type = "bezier"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("OpenSprite:modulate:a")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"handle_modes": PackedInt32Array(0, 0),
+"points": PackedFloat32Array(0, -0.25, 0, 0.25, 0, 1, -0.25, 0, 0.25, 0),
+"times": PackedFloat32Array(0, 0.3)
+}
+
+[sub_resource type="Animation" id="3"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ClosedSprite:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [true]
+}
+tracks/1/type = "bezier"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("ClosedSprite:modulate:r")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/2/type = "bezier"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("ClosedSprite:modulate:g")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/3/type = "bezier"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("ClosedSprite:modulate:b")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/4/type = "bezier"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("ClosedSprite:modulate:a")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/5/type = "value"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath("OpenSprite:visible")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [false]
+}
+tracks/6/type = "bezier"
+tracks/6/imported = false
+tracks/6/enabled = true
+tracks/6/path = NodePath("OpenSprite:modulate:r")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/7/type = "bezier"
+tracks/7/imported = false
+tracks/7/enabled = true
+tracks/7/path = NodePath("OpenSprite:modulate:g")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/8/type = "bezier"
+tracks/8/imported = false
+tracks/8/enabled = true
+tracks/8/path = NodePath("OpenSprite:modulate:b")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+tracks/9/type = "bezier"
+tracks/9/imported = false
+tracks/9/enabled = true
+tracks/9/path = NodePath("OpenSprite:modulate:a")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = {
+"handle_modes": PackedInt32Array(),
+"points": PackedFloat32Array(),
+"times": PackedFloat32Array()
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rw5dn"]
+_data = {
+"Opening": SubResource("2"),
+"RESET": SubResource("3")
+}
+
+[node name="ItemUp" type="Area2D"]
+collision_layer = 8
+collision_mask = 0
+script = ExtResource("2")
+
+[node name="ClosedSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+
+[node name="OpenSprite" type="Sprite2D" parent="."]
+visible = false
+modulate = Color(1, 1, 1, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+disabled = true
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_rw5dn")
+}
+enabled = true
+update_rate = 0.001
+
+[node name="Sprite" type="Spriteclass_name ItemUpExplosion
+
+extends Node2D
+
+@onready var animated_sprite := $AnimatedSprite2D as AnimatedSprite2D
+
+
+func _ready():
+	animated_sprite.play()
+
+	GlobalCamera.shake_screen()
+
+
+func _on_AnimatedSprite_animation_finished():
+	queue_free()
+[gd_scene load_steps=9 format=3 uid="uid://djani3iyidy42"]
+
+[ext_resource type="Texture2D" uid="uid://cj2osg15c437i" path="res://items/item_up/explosion/explosion.png" id="1"]
+[ext_resource type="Script" path="res://items/item_up/explosion/Explosion.gd" id="2"]
+[ext_resource type="AudioStream" uid="uid://ksm0jiof5xbh" path="res://items/item_up/explosion/explosion.wav" id="3"]
+
+[sub_resource type="AtlasTexture" id="1"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="2"]
+atlas = ExtResource("1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="3"]
+atlas = ExtResource("1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="4"]
+atlas = ExtResource("1")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("1")
+}, {
+"duration": 1.0,
+"texture": SubResource("2")
+}, {
+"duration": 1.0,
+"texture": SubResource("3")
+}, {
+"duration": 1.0,
+"texture": SubResource("4")
+}],
+"loop": false,
+"name": &"default",
+"speed": 15.0
+}]
+
+[node name="Explosion" type="Node2D"]
+script = ExtResource("2")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("5")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3")
+volume_db = -8.0
+pitch_scale = 0.8
+autoplay = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_AnimatedSprite_animation_finished"]
+function _on_AnimatedSprite_animation_finished (args)
+    if args.animation_finished then
+        spriteclass_name MissileUp
+
+extends "../item_up/ItemUp.gd"
+export var damage: float = 1.0
+export var speed: float = 100.[gd_scene load_steps=4 format=3 uid="uid://cirwu78pgcswg"]
+
+[ext_resource type="PackedScene" uid="uid://od0ltbnj35k5" path="res://items/item_up/ItemUp.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://dsech46w4a8hc" path="res://items/missile_up/missile_up.png" id="2"]
+[ext_resource type="Script" path="res://items/missile_up/MissileUp.gd" id="3"]
+
+[node name="MissileUp" instance=ExtResource("1")]
+script = ExtResource("3")
+
+[node name="OpenSprite" parent="." index="1"]
+texture = ExtResource("2")
+sprite = Sprite(texture)
+
+[node name="Missile" parent="OpenSprite" index="0"]
+class_name PowerUp
+
+extends "../item_up/ItemUp.gd"
+export var power_up_type: int = 0
+export var power_up_count: int = [gd_scene load_steps=4 format=3 uid="uid://yx54x153x5rg"]
+
+[ext_resource type="PackedScene" uid="uid://od0ltbnj35k5" path="res://items/item_up/ItemUp.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://by7uwh50lxsf4" path="res://items/power_up/power_up.png" id="2"]
+[ext_resource type="Script" path="res://items/power_up/PowerUp.gd" id="3"]
+
+[node name="PowerUp" instance=ExtResource("1")]
+script = ExtResource("3")
+
+[node name="OpenSprite" parent="." index="1"]
+texture = ExtResource("2")
+sprite = Sprite("2", 0, 0, 0, 0, 0class_name ShieldUp
+
+extends "../item_up/ItemUp.gd"
+var _up: ItemUp
+var _damage: float = 10
+var _speed:[gd_scene load_steps=4 format=3 uid="uid://3ubujn4yv1gf"]
+
+[ext_resource type="PackedScene" uid="uid://od0ltbnj35k5" path="res://items/item_up/ItemUp.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://brldju6k6fpia" path="res://items/shield_up/shield_up.png" id="2"]
+[ext_resource type="Script" path="res://items/shield_up/ShieldUp.gd" id="3"]
+
+[node name="ShieldUp" instance=ExtResource("1")]
+script = ExtResource("3")
+
+[node name="OpenSprite" parent="." index="1"]
+texture = ExtResource("2")
+sprite = Sprite("1")
+sprite.texture = texture
+sprite.index = 1
+
+[node name="class_name SpeedUp
+
+extends "../item_up/ItemUp.gd"
+export var speed: float
+
+func _ready():
+	$Timer.start()
+
+func _on_Timer_timeout[gd_scene load_steps=4 format=3 uid="uid://pr2wkti6h1m2"]
+
+[ext_resource type="PackedScene" uid="uid://od0ltbnj35k5" path="res://items/item_up/ItemUp.tscn" id="1"]
+[ext_resource type="Texture2D" uid="uid://fu87q1hy7u3i" path="res://items/speed_up/speed_up.png" id="2"]
+[ext_resource type="Script" path="res://items/speed_up/SpeedUp.gd" id="3"]
+
+[node name="SpeedUp" instance=ExtResource("1")]
+script = ExtResource("3")
+
+[node name="OpenSprite" parent="." index="1"]
+texture = ExtResource("2")
+sprite = Sprite()
+sprite.texture = texture
+sprite.position = Vector2(0, 0)
+extends Node2D
+
+@onready var player := $Player as Player
+@onready var ready_label := $UI/ReadyLabel as Label
+@onready var status_bar := $StatusBar as StatusBar
+
+
+func _ready():
+	var error_code := player.connect(
+		"lives_changed", Callable(status_bar, "_on_player_lives_changed")
+	)
+
+	if error_code:
+		print(error_code)
+
+
+func _on_ReadyTimer_timeout():
+	ready_label.hide()
+	status_bar.set_lives(player.lives)
+	status_bar.show()
+[gd_scene load_steps=7 format=3 uid="uid://dmxk4wp0ls8go"]
+
+[ext_resource type="Script" path="res://levels/level/Level.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bpsefiotqlkol" path="res://fonts/ARCADECLASSIC.TTF" id="2"]
+[ext_resource type="PackedScene" uid="uid://ca3lws27wtksg" path="res://ui/status_bar/StatusBar.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://ck8gu485r1kao" path="res://player/Player.tscn" id="4"]
+[ext_resource type="Script" path="res://levels/level/background/Background.gd" id="6"]
+
+[sub_resource type="FontFile" id="2"]
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
+fallbacks = Array[Font]([ExtResource("2")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/9/0/ascent = 0.0
+cache/0/9/0/descent = 0.0
+cache/0/9/0/underline_position = 0.0
+cache/0/9/0/underline_thickness = 0.0
+cache/0/9/0/scale = 1.0
+cache/0/9/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/10/0/ascent = 0.0
+cache/0/10/0/descent = 0.0
+cache/0/10/0/underline_position = 0.0
+cache/0/10/0/underline_thickness = 0.0
+cache/0/10/0/scale = 1.0
+cache/0/10/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/11/0/ascent = 0.0
+cache/0/11/0/descent = 0.0
+cache/0/11/0/underline_position = 0.0
+cache/0/11/0/underline_thickness = 0.0
+cache/0/11/0/scale = 1.0
+cache/0/11/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/12/0/ascent = 0.0
+cache/0/12/0/descent = 0.0
+cache/0/12/0/underline_position = 0.0
+cache/0/12/0/underline_thickness = 0.0
+cache/0/12/0/scale = 1.0
+cache/0/12/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/12/0 = Vector2(0, 0)
+
+[node name="Level" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Background" type="Node2D" parent="."]
+script = ExtResource("6")
+player_node_path = NodePath("../Player")
+
+[node name="Starfield" type="TileMap" parent="Background"]
+z_index = -1
+format = 2
+
+[node name="Border" type="TileMap" parent="Background"]
+z_index = -1
+format = 2
+
+[node name="Terrain" type="TileMap" parent="Background"]
+z_index = -1
+format = 2
+
+[node name="Enemies" type="Node2D" parent="Background"]
+
+[node name="Items" type="Node2D" parent="Background"]
+
+[node name="Player" parent="." instance=ExtResource("4")]
+position = Vector2(80, 125)
+
+[node name="StatusBar" parent="." instance=ExtResource("3")]
+
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 160.0
+offset_bottom = 144.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ReadyLabel" type="Label" parent="UI"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -15.0
+offset_top = -6.0
+offset_right = 15.0
+offset_bottom = 6.0
+theme_override_colors/font_color = Color(0.0588235, 0.219608, 0.0588235, 1)
+theme_override_fonts/font = SubResource("2")
+theme_override_font_sizes/font_size = 11
+text = "READY"
+
+[node name="ReadyTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+autostart = true
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+volume_db = 0.9
+autoplay = true
+
+[connection signal="timeout" from="ReadyTimer" to="." method="_on_ReadyTimer_timeout"]
+[connection signal="timeout" from="AudioStreamPlayer2D" to="." method="_onclass_name Background
+
+extends Node2D
+
+@export var speed := 10
+@export var player_node_path: NodePath
+
+var original_speed := speed
+
+var border_speed := 0.0:
+	set(value):
+		border_speed = value
+	get:
+		return speed / 4.0
+
+var starfield_speed := 0.0:
+	set(value):
+		starfield_speed = value
+	get:
+		return speed / 2.0
+
+@onready var border := $Border as TileMap
+@onready var player := get_node(player_node_path) as Player
+@onready var screen_size := get_viewport_rect().size
+@onready var starfield := $Starfield as TileMap
+
+
+func _process(delta: float):
+	position.x = (player.position.x - screen_size.x / 2) / 25
+	position.y += speed * delta
+
+	border.position.y -= border_speed * delta
+	starfield.position.y -= starfield_speed * delta
+
+
+func stop_scrolling():
+	speed = 0
+
+
+func restore_scroll():
+	speed = original_speed
+extends "res://levels/level/Level.gd"
+export var level_data: Dictionary
+export var level_type: String = "default"
+export var level[gd_scene load_steps=9 format=3 uid="uid://t3va4af4820i"]
+
+[ext_resource type="PackedScene" uid="uid://dmxk4wp0ls8go" path="res://levels/level/Level.tscn" id="1"]
+[ext_resource type="TileSet" uid="uid://dyoqgiasst7g5" path="res://levels/level_1/background/Starfield.tres" id="3_ppkte"]
+[ext_resource type="TileSet" uid="uid://cfkwpg858or6" path="res://levels/level_1/background/Border.tres" id="4_7xcxt"]
+[ext_resource type="TileSet" uid="uid://cbradctladnsi" path="res://levels/level_1/background/Terrain.tres" id="5_r2nds"]
+[ext_resource type="PackedScene" uid="uid://os3ea50ga374" path="res://enemies/mini_boss_1/MiniBoss1.tscn" id="6_t6bdm"]
+[ext_resource type="AudioStream" uid="uid://dbv6glhdsy51d" path="res://levels/level_1/level.mp3" id="7"]
+[ext_resource type="PackedScene" uid="uid://djp5ht5mvlcll" path="res://enemies/turret/Turret.tscn" id="7_rjoh8"]
+[ext_resource type="Script" path="res://levels/level_1/Level.gd" id="8"]
+
+[node name="Level" instance=ExtResource("1")]
+script = ExtResource("8")
+
+[node name="Starfield" parent="Background" index="0"]
+tile_set = ExtResource("3_ppkte")
+layer_0/tile_data = PackedInt32Array(262146, 4, 0, 131079, 4, 0, 1, 4, 0, -196600, 4, 0, -262142, 4, 0, 65539, 131076, 0, -327673, 131076, 0, -131072, 196612, 0, 327688, 196612, 0, 393217, 65540, 0, -458749, 65540, 0)
+
+[node name="Border" parent="Background" index="1"]
+tile_set = ExtResource("4_7xcxt")
+layer_0/tile_data = PackedInt32Array(524288, 65539, 0, 458752, 65539, 0, 393216, 65539, 0, 327680, 65539, 0, 262144, 65539, 0, 196608, 65539, 0, 131072, 65539, 0, 65536, 65539, 0, 0, 65539, 0, -65536, 65539, 0, -131072, 65539, 0, -196608, 65539, 0, -262144, 65539, 0, -327680, 65539, 0, -393216, 65539, 0, -458752, 65539, 0, -524288, 65539, 0, 524297, 65539, 65536, 458761, 65539, 65536, 393225, 65539, 65536, 327689, 65539, 65536, 262153, 65539, 65536, 196617, 65539, 65536, 131081, 65539, 65536, 65545, 65539, 65536, 9, 65539, 65536, -65527, 65539, 65536, -131063, 65539, 65536, -196599, 65539, 65536, -262135, 65539, 65536, -327671, 65539, 65536, -393207, 65539, 65536, -458743, 65539, 65536, -524279, 65539, 65536, 589823, 3, 0, 524287, 3, 0, 458751, 3, 0, 393215, 3, 0, 327679, 3, 0, 262143, 3, 0, 196607, 3, 0, 131071, 3, 0, 65535, 3, 0, -1, 3, 0, -65537, 3, 0, -131073, 3, 0, -196609, 3, 0, -262145, 3, 0, -327681, 3, 0, -393217, 3, 0, -458753, 3, 0, 524298, 3, 0, 458762, 3, 0, 393226, 3, 0, 327690, 3, 0, 262154, 3, 0, 196618, 3, 0, 131082, 3, 0, 65546, 3, 0, 10, 3, 0, -65526, 3, 0, -131062, 3, 0, -196598, 3, 0, -262134, 3, 0, -327670, 3, 0, -524278, 3, 0, -458742, 3, 0, -393206, 3, 0)
+
+[node name="Terrain" parent="Background" index="2"]
+tile_set = ExtResource("5_r2nds")
+layer_0/tile_data = PackedInt32Array(-131064, 65536, 0, -65528, 65536, 0, 8, 65536, 0, 65544, 65536, 0, -131065, 0, 0, -65529, 0, 0, -65527, 65536, 0)
+
+[node name="MiniBoss1" parent="Background/Enemies" index="0" instance=ExtResource("6_t6bdm")]
+position = Vector2(80, -24)
+
+[node name="Enemy" parent="Background/Enemies" index="1" instance=ExtResource("7_rjoh8")]
+position = Vector2(120, -8)
+
+[node name="Enemy2" parent="Background/Enemies" index="2" instance=ExtResource("7_rjoh8")]
+position = Vector2(120, -24)
+
+[node name="AudioStreamPlayer2D" parent="." index="5"]
+stream = ExtResource("7")
+playback_mode = 0
+
+[node name="Enemy" parent="Background/Enemies" index="class_name Player
+
+extends Area2D
+
+signal lives_changed(lives)
+
+enum States { ALIVE, DEAD }
+
+const Bullet = preload("bullet/Bullet.tscn")
+const Explosion = preload("explosion/Explosion.tscn")
+const Missile = preload("turret/missile/Missile.tscn")
+const Turret = preload("turret/Turret.tscn")
+
+@export var speed := 75.0
+
+var can_shoot := true
+var immortality := false
+var left_turret: PlayerTurret = null
+var lives := 3
+var right_turret: PlayerTurret = null
+var shields := 0
+var state := States.ALIVE
+var turrets_level := 0
+var weapons_level := 1
+
+@onready var bullet_audio := $Audio/BulletAudio as AudioStreamPlayer2D
+@onready var immortality_timer := $ImmortalityTimer as Timer
+@onready var item_up_audio := $Audio/ItemUpAudio as AudioStreamPlayer2D
+@onready var number_of_weapon_upgrades := $ShotPositions.get_children().size()
+@onready var orbs := $Orbs as Node2D
+@onready var screen_size := get_viewport_rect().size
+@onready var size := ($Sprite2D as Sprite2D).texture.get_size()
+@onready var shot_positions := $ShotPositions as Node2D
+@onready var shot_timer := $ShotTimer as Timer
+
+
+func _ready():
+	to_dead()
+
+
+func _process(delta: float):
+	match state:
+		States.ALIVE:
+			alive_process(delta)
+		States.DEAD:
+			dead_process(delta)
+
+	if immortality:
+		modulate.a = 0.5 if Engine.get_frames_drawn() % 20 > 10 else 1.0
+	else:
+		modulate.a = 1.0
+
+	orbs.rotate(delta * 4)
+
+	if left_turret:
+		left_turret.position = left_turret.position.lerp(position + Vector2(-12, 1), 40 * delta)
+
+	if right_turret:
+		right_turret.position = right_turret.position.lerp(position + Vector2(12, 1), 40 * delta)
+
+
+func alive_process(delta: float):
+	var velocity := Vector2.ZERO
+
+	if Input.is_action_pressed("ui_right"):
+		velocity.x += 1
+	if Input.is_action_pressed("ui_left"):
+		velocity.x -= 1
+	if Input.is_action_pressed("ui_down"):
+		velocity.y += 1
+	if Input.is_action_pressed("ui_up"):
+		velocity.y -= 1
+	if Input.is_action_pressed("ui_accept"):
+		shoot()
+
+	if velocity.length() > 0:
+		velocity = velocity.normalized() * speed
+
+	position += velocity * delta
+
+	position.x = clampf(position.x, size.x / 2, screen_size.x - size.x / 2)
+	position.y = clampf(position.y, size.y / 2, screen_size.y - size.y / 2)
+
+
+func begin_immortality():
+	immortality_timer.start()
+
+	immortality = true
+
+
+func end_immortality():
+	immortality = false
+
+
+func to_dead():
+	begin_immortality()
+
+	position.y = screen_size.y + size.y
+
+	state = States.DEAD
+
+
+func dead_process(delta: float):
+	position.y -= speed * delta
+
+	if position.y <= 125:
+		state = States.ALIVE
+
+
+func raise_shield():
+	if shields >= 0 and shields < orbs.get_child_count():
+		for orb in orbs.get_children() as Array[Node2D]:
+			orb.hide()
+
+		shields += 1
+
+		(orbs.get_node(str(shields)) as Node2D).show()
+
+
+func lower_shield():
+	if shields > 0:
+		for orb in orbs.get_children() as Array[Node2D]:
+			orb.hide()
+
+		shields -= 1
+
+		if shields > 0:
+			(orbs.get_node(str(shields)) as Node2D).show()
+
+
+func shoot():
+	if can_shoot:
+		shot_timer.start()
+
+		can_shoot = false
+
+		for shot_position in (
+			shot_positions.get_node(str(weapons_level)).get_children() as Array[Marker2D]
+		):
+			var bullet := Bullet.instantiate() as PlayerBullet
+
+			bullet.position = shot_position.global_position
+			bullet.rotation = shot_position.rotation
+
+			get_parent().add_child(bullet)
+
+		if left_turret:
+			var missile := Missile.instantiate() as PlayerMissile
+
+			missile.position = left_turret.position
+
+			get_parent().add_child(missile)
+
+		if right_turret:
+			var missile := Missile.instantiate() as PlayerMissile
+
+			missile.position = right_turret.position
+
+			get_parent().add_child(missile)
+
+		bullet_audio.play()
+
+
+func subtract_life():
+	if lives > 0:
+		lives -= 1
+
+		emit_signal("lives_changed", lives)
+	else:
+		Transitions.change_scene_to_file("res://screens/game_over/GameOver.tscn")
+
+
+func upgrade_turret():
+	if turrets_level >= 2:
+		return
+
+	turrets_level += 1
+
+	if turrets_level == 1:
+		left_turret = Turret.instantiate() as PlayerTurret
+		left_turret.position = position
+
+		get_node("../..").call_deferred("add_child", left_turret)
+	elif turrets_level == 2:
+		right_turret = Turret.instantiate() as PlayerTurret
+		right_turret.position = position
+
+		get_node("../..").call_deferred("add_child", right_turret)
+
+
+func downgrade_turrets():
+	turrets_level = 0
+
+	if left_turret:
+		left_turret.queue_free()
+		left_turret = null
+
+	if right_turret:
+		right_turret.queue_free()
+		right_turret = null
+
+
+func upgrade_weapons():
+	if weapons_level < number_of_weapon_upgrades:
+		weapons_level += 1
+
+
+func explode():
+	downgrade_turrets()
+	downgrade_weapons()
+
+	subtract_life()
+
+	to_dead()
+
+	var explosion := Explosion.instantiate() as PlayerExplosion
+
+	explosion.position = position
+
+	get_parent().add_child(explosion)
+
+
+func downgrade_weapons():
+	weapons_level = 1
+
+
+func _on_ImmortalityTimer_timeout():
+	end_immortality()
+
+
+func _on_ShotTimer_timeout():
+	shot_timer.stop()
+
+	can_shoot = true
+
+
+func _on_Player_area_entered(area: Area2D):
+	if area is MissileUp:
+		upgrade_turret()
+
+	if area is PowerUp:
+		upgrade_weapons()
+
+	if area is ShieldUp:
+		raise_shield()
+
+	if area is SpeedUp:
+		speed *= 1.25
+
+	if area is ItemUp:
+		var item_up := area as ItemUp
+
+		if item_up.is_opening or item_up.is_open:
+			item_up_audio.play()
+
+			item_up.queue_free()
+
+			return
+
+		item_up.explode()
+
+	if immortality:
+		return
+
+	if area is Enemy:
+		(area as Enemy).explode()
+
+	if shields > 0:
+		lower_shield()
+
+		begin_immortality()
+	else:
+		explode()
+[gd_scene load_steps=7 format=3 uid="uid://ck8gu485r1kao"]
+
+[ext_resource type="Texture2D" uid="uid://dbebia7fx1r3" path="res://player/player.png" id="1"]
+[ext_resource type="Script" path="res://player/Player.gd" id="2"]
+[ext_resource type="AudioStream" uid="uid://cbhklhtcsjos4" path="res://player/bullet/bullet.wav" id="3"]
+[ext_resource type="Texture2D" uid="uid://cboak4b7pood7" path="res://player/orb/orb.png" id="4"]
+[ext_resource type="AudioStream" uid="uid://bg58h41cyepd1" path="res://items/item_up/item_up.wav" id="5"]
+
+[sub_resource type="CapsuleShape2D" id="1"]
+radius = 8.0
+height = 16.0
+
+[node name="Player" type="Area2D"]
+collision_mask = 12
+script = ExtResource("2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -1)
+texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -1)
+shape = SubResource("1")
+
+[node name="ImmortalityTimer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true
+
+[node name="ShotTimer" type="Timer" parent="."]
+wait_time = 0.35
+
+[node name="ShotPositions" type="Node2D" parent="."]
+
+[node name="1" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/1"]
+position = Vector2(0, -8)
+rotation = -1.5708
+
+[node name="2" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/2"]
+position = Vector2(-4, -8)
+rotation = -1.5708
+
+[node name="Position2" type="Marker2D" parent="ShotPositions/2"]
+position = Vector2(4, -8)
+rotation = -1.5708
+
+[node name="3" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/3"]
+position = Vector2(0, -8)
+rotation = -1.5708
+
+[node name="Position2" type="Marker2D" parent="ShotPositions/3"]
+position = Vector2(-4, -8)
+rotation = -1.5708
+
+[node name="Position3" type="Marker2D" parent="ShotPositions/3"]
+position = Vector2(4, -8)
+rotation = -1.5708
+
+[node name="4" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/4"]
+position = Vector2(-2, -8)
+rotation = -1.5708
+
+[node name="Position2" type="Marker2D" parent="ShotPositions/4"]
+position = Vector2(2, -8)
+rotation = -1.5708
+
+[node name="Position3" type="Marker2D" parent="ShotPositions/4"]
+position = Vector2(-6, -8)
+rotation = -1.5708
+
+[node name="Position4" type="Marker2D" parent="ShotPositions/4"]
+position = Vector2(6, -8)
+rotation = -1.5708
+
+[node name="5" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(-2, -8)
+rotation = -1.5708
+
+[node name="Position2" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(2, -8)
+rotation = -1.5708
+
+[node name="Position3" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(-6, -8)
+rotation = -1.5708
+
+[node name="Position4" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(6, -8)
+rotation = -1.5708
+
+[node name="Position5" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(9, -5)
+rotation = -1.5708
+
+[node name="Position6" type="Marker2D" parent="ShotPositions/5"]
+position = Vector2(-9, -5)
+rotation = -1.5708
+
+[node name="6" type="Node2D" parent="ShotPositions"]
+
+[node name="Position1" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(-2, -8)
+rotation = -1.5708
+
+[node name="Position2" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(2, -8)
+rotation = -1.5708
+
+[node name="Position3" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(-6, -8)
+rotation = -1.5708
+
+[node name="Position4" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(6, -8)
+rotation = -1.5708
+
+[node name="Position5" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(9, -5)
+rotation = -1.5708
+
+[node name="Position6" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(-9, -5)
+rotation = -1.5708
+
+[node name="Position7" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(-11, -2.38419e-07)
+rotation = -1.5708
+
+[node name="Position8" type="Marker2D" parent="ShotPositions/6"]
+position = Vector2(11, -2.38419e-07)
+rotation = -1.5708
+
+[node name="Orbs" type="Node2D" parent="."]
+modulate = Color(1, 1, 1, 0.784314)
+
+[node name="1" type="Node2D" parent="Orbs"]
+visible = false
+
+[node name="Orb" type="Sprite2D" parent="Orbs/1"]
+position = Vector2(0, -14)
+texture = ExtResource("4")
+
+[node name="2" type="Node2D" parent="Orbs"]
+visible = false
+
+[node name="Orb" type="Sprite2D" parent="Orbs/2"]
+position = Vector2(0, -14)
+texture = ExtResource("4")
+
+[node name="Orb2" type="Sprite2D" parent="Orbs/2"]
+position = Vector2(0, 14)
+texture = ExtResource("4")
+
+[node name="3" type="Node2D" parent="Orbs"]
+visible = false
+
+[node name="Orb" type="Sprite2D" parent="Orbs/3"]
+position = Vector2(0, -14)
+texture = ExtResource("4")
+
+[node name="Orb2" type="Sprite2D" parent="Orbs/3"]
+position = Vector2(-11, 9)
+texture = ExtResource("4")
+
+[node name="Orb3" type="Sprite2D" parent="Orbs/3"]
+position = Vector2(11, 9)
+texture = ExtResource("4")
+
+[node name="Audio" type="Node2D" parent="."]
+
+[node name="BulletAudio" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("3")
+volume_db = -10.0
+pitch_scale = 0.75
+
+[node name="ItemUpAudio" type="AudioStreamPlayer2D" parent="Audio"]
+stream = ExtResource("5")
+volume_db = -4.0
+pitch_scale = 0.9
+
+[connection signal="area_entered" from="." to="." method="_on_Player_area_entered"]
+[connection signal="timeout" from="ImmortalityTimer" to="." method="_on_ImmortalityTimer_timeout"]
+[connection signal="timeout" from="ShotTimer" to="." method="_on_ShotTimer_timeout"]
+[connection signal="area_entered" from="." to="." method="_on_Player_area_enterclass_name PlayerBullet
+
+extends Area2D
+
+@export var speed := 500
+
+@onready var collision_shape := $CollisionShape2D as CollisionShape2D
+@onready var sprite := $Sprite2D as Sprite2D
+
+
+func _ready():
+	collision_shape.rotate(rotation)
+	sprite.rotate(rotation)
+
+
+func _process(delta: float):
+	position += transform.x * speed * delta
+
+
+func _on_VisibilityNotifier2D_screen_exited():
+	queue_free()
+
+
+func _on_Bullet_area_entered(area: Area2D):
+	if area is Enemy:
+		var enemy := area as Enemy
+
+		Global.add_score(enemy.value)
+
+		enemy.explode()
+
+		queue_free()
+
+	if area is ItemUp:
+		var item_up := area as ItemUp
+
+		if item_up.is_open:
+			item_up.explode()
+		else:
+			item_up.open()
+
+		queue_free()
+[gd_scene load_steps=4 format=3 uid="uid://c6vlaeqhomibr"]
+
+[ext_resource type="Texture2D" uid="uid://h75v8rw68yn7" path="res://player/bullet/bullet.png" id="1"]
+[ext_resource type="Script" path="res://player/bullet/Bullet.gd" id="1_mg4ny"]
+
+[sub_resource type="CapsuleShape2D" id="1"]
+radius = 2.0
+height = 6.0
+
+[node name="Bullet" type="Area2D"]
+z_index = 1
+collision_layer = 2
+collision_mask = 12
+script = ExtResource("1_mg4ny")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("1")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="area_entered" from="." to="." method="_on_Bullet_area_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]
+[connection signal="visible_on_screen" from="." to="." method="_on_Visibilityclass_name PlayerExplosion
+
+extends Node2D
+
+@onready var animated_sprite := $AnimatedSprite2D as AnimatedSprite2D
+
+
+func _ready():
+	animated_sprite.play()
+
+	GlobalCamera.shake_screen()
+
+
+func _on_AnimatedSprite_animation_finished():
+	queue_free()
+[gd_scene load_steps=9 format=3 uid="uid://cgk4kug4wy8ao"]
+
+[ext_resource type="Texture2D" uid="uid://cb20u57q6k212" path="res://player/explosion/explosion.png" id="1"]
+[ext_resource type="Script" path="res://player/explosion/Explosion.gd" id="2"]
+[ext_resource type="AudioStream" uid="uid://cfwgkkq12tw8l" path="res://player/explosion/explosion.wav" id="3"]
+
+[sub_resource type="AtlasTexture" id="1"]
+atlas = ExtResource("1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="2"]
+atlas = ExtResource("1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="3"]
+atlas = ExtResource("1")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="4"]
+atlas = ExtResource("1")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("1")
+}, {
+"duration": 1.0,
+"texture": SubResource("2")
+}, {
+"duration": 1.0,
+"texture": SubResource("3")
+}, {
+"duration": 1.0,
+"texture": SubResource("4")
+}],
+"loop": false,
+"name": &"default",
+"speed": 15.0
+}]
+
+[node name="Explosion" type="Node2D"]
+script = ExtResource("2")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("5")
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("3")
+volume_db = -8.0
+pitch_scale = 0.8
+autoplay = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_AnimatedSprite_animation_finished"]
+[connection signal="audio_finished" from="AudioStreamPlayer2D" to="." method="_class_name PlayerTurret
+
+extends Area2D
+var _turret
+
+var _turret_position
+
+var _turret_velocity
+
+var _t[gd_scene load_steps=4 format=3 uid="uid://d0sodl6w1aqu0"]
+
+[ext_resource type="Texture2D" uid="uid://dh2euiyens3ks" path="res://player/turret/turret.png" id="1"]
+[ext_resource type="Script" path="res://player/turret/Turret.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(4, 9)
+
+[node name="Turret" type="Area2D"]
+collision_mask = 12
+script = ExtResource("2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 0.5)
+shape = SubResource("1")
+shape.scale = 0.5
+
+[node name="Sprite2D" type="Sprite2Dclass_name PlayerMissile
+
+extends Area2D
+
+@export var speed := 200
+
+@onready var collision_shape := $CollisionShape2D as CollisionShape2D
+@onready var sprite := $Sprite2D as Sprite2D
+
+
+func _process(delta: float):
+	position.y -= speed * delta
+
+
+func _on_VisibilityNotifier2D_screen_exited():
+	queue_free()
+
+
+func _on_Missile_area_entered(area: Area2D):
+	if area is ItemUp:
+		var item_up := area as ItemUp
+
+		if item_up.is_open:
+			item_up.explode()
+		else:
+			item_up.open()
+
+		queue_free()
+
+	if area is Enemy:
+		var enemy := area as Enemy
+
+		Global.add_score(enemy.value)
+
+		enemy.explode()
+
+		queue_free()
+[gd_scene load_steps=4 format=3 uid="uid://cgwqep73d7umf"]
+
+[ext_resource type="Texture2D" uid="uid://cdw123c5pbmhb" path="res://player/turret/missile/missile.png" id="1"]
+[ext_resource type="Script" path="res://player/turret/missile/Missile.gd" id="2"]
+
+[sub_resource type="RectangleShape2D" id="1"]
+size = Vector2(2, 5)
+
+[node name="Missile" type="Area2D"]
+collision_layer = 2
+collision_mask = 12
+script = ExtResource("2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -0.5)
+shape = SubResource("1")
+
+[node name="VisibleOnScreenNotifier2D" type="VisibleOnScreenNotifier2D" parent="."]
+
+[connection signal="area_entered" from="." to="." method="_on_Missile_area_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenNotifier2D" to="." method="_on_VisibilityNotifier2D_screen_exited"]
+[connection signal="collision_entered" from="." to="." method="_on_Missileextends Control
+
+
+func _process(_delta: float):
+	if Input.is_action_just_pressed("ui_accept"):
+		Transitions.change_scene_to_file("res://screens/splash/Splash.tscn")
+
+		Global.reset()
+		$Hud.visible = false
+		$Hud.visible = false
+		[gd_scene load_steps=4 format=3 uid="uid://cgy82bg5xwj4q"]
+
+[ext_resource type="Script" path="res://screens/game_over/GameOver.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bpsefiotqlkol" path="res://fonts/ARCADECLASSIC.TTF" id="2"]
+
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("2")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/2/0/ascent = 0.0
+cache/0/2/0/descent = 0.0
+cache/0/2/0/underline_position = 0.0
+cache/0/2/0/underline_thickness = 0.0
+cache/0/2/0/scale = 1.0
+cache/0/2/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/2/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/3/0/ascent = 0.0
+cache/0/3/0/descent = 0.0
+cache/0/3/0/underline_position = 0.0
+cache/0/3/0/underline_thickness = 0.0
+cache/0/3/0/scale = 1.0
+cache/0/3/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/3/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/4/0/ascent = 0.0
+cache/0/4/0/descent = 0.0
+cache/0/4/0/underline_position = 0.0
+cache/0/4/0/underline_thickness = 0.0
+cache/0/4/0/scale = 1.0
+cache/0/4/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/4/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/5/0/ascent = 0.0
+cache/0/5/0/descent = 0.0
+cache/0/5/0/underline_position = 0.0
+cache/0/5/0/underline_thickness = 0.0
+cache/0/5/0/scale = 1.0
+cache/0/5/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/5/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/6/0/ascent = 0.0
+cache/0/6/0/descent = 0.0
+cache/0/6/0/underline_position = 0.0
+cache/0/6/0/underline_thickness = 0.0
+cache/0/6/0/scale = 1.0
+cache/0/6/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/6/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/7/0/ascent = 0.0
+cache/0/7/0/descent = 0.0
+cache/0/7/0/underline_position = 0.0
+cache/0/7/0/underline_thickness = 0.0
+cache/0/7/0/scale = 1.0
+cache/0/7/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/7/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/8/0/ascent = 0.0
+cache/0/8/0/descent = 0.0
+cache/0/8/0/underline_position = 0.0
+cache/0/8/0/underline_thickness = 0.0
+cache/0/8/0/scale = 1.0
+cache/0/8/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/9/0/ascent = 0.0
+cache/0/9/0/descent = 0.0
+cache/0/9/0/underline_position = 0.0
+cache/0/9/0/underline_thickness = 0.0
+cache/0/9/0/scale = 1.0
+cache/0/9/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/10/0/ascent = 0.0
+cache/0/10/0/descent = 0.0
+cache/0/10/0/underline_position = 0.0
+cache/0/10/0/underline_thickness = 0.0
+cache/0/10/0/scale = 1.0
+cache/0/10/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/11/0/ascent = 0.0
+cache/0/11/0/descent = 0.0
+cache/0/11/0/underline_position = 0.0
+cache/0/11/0/underline_thickness = 0.0
+cache/0/11/0/scale = 1.0
+cache/0/11/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/11/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/12/0/ascent = 0.0
+cache/0/12/0/descent = 0.0
+cache/0/12/0/underline_position = 0.0
+cache/0/12/0/underline_thickness = 0.0
+cache/0/12/0/scale = 1.0
+cache/0/12/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/12/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/13/0/ascent = 0.0
+cache/0/13/0/descent = 0.0
+cache/0/13/0/underline_position = 0.0
+cache/0/13/0/underline_thickness = 0.0
+cache/0/13/0/scale = 1.0
+cache/0/13/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/13/0/kerning_overrides/14/0 = Vector2(0, 0)
+cache/0/14/0/ascent = 0.0
+cache/0/14/0/descent = 0.0
+cache/0/14/0/underline_position = 0.0
+cache/0/14/0/underline_thickness = 0.0
+cache/0/14/0/scale = 1.0
+cache/0/14/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/2/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/3/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/4/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/5/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/6/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/7/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/11/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/12/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/13/0 = Vector2(0, 0)
+cache/0/14/0/kerning_overrides/14/0 = Vector2(0, 0)
+
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="GameOverLabel" type="Label" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -6.5
+offset_right = 30.0
+offset_bottom = 6.5
+theme_override_colors/font_color = Color(0.0588235, 0.219608, 0.0588235, 1)
+theme_override_fonts/font = SubResource("1")
+theme_override_font_sizes/font_size = 13
+text = "Game  Over"
+font = SubResource("2")
+
+[node name="GameOverButton" type="Button" parent="."]
+extends Control
+
+
+func _process(_delta: float):
+	if Input.is_action_just_pressed("ui_accept"):
+		Transitions.change_scene_to_file(
+			"res://levels/level_1/Level.tscn", Transitions.Types.SQUARES
+		)
+[gd_scene load_steps=7 format=3 uid="uid://ddvnpvlvskikb"]
+
+[ext_resource type="FontFile" uid="uid://bpsefiotqlkol" path="res://fonts/ARCADECLASSIC.TTF" id="1"]
+[ext_resource type="Script" path="res://screens/splash/Splash.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://dsfv0df2qjetc" path="res://screens/splash/rear.png" id="3"]
+[ext_resource type="Texture2D" uid="uid://bqlgjnciirl1" path="res://screens/splash/ship.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://dcrjlc4indi2u" path="res://screens/splash/logo.png" id="5"]
+
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/9/0/ascent = 0.0
+cache/0/9/0/descent = 0.0
+cache/0/9/0/underline_position = 0.0
+cache/0/9/0/underline_thickness = 0.0
+cache/0/9/0/scale = 1.0
+cache/0/9/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/10/0/ascent = 0.0
+cache/0/10/0/descent = 0.0
+cache/0/10/0/underline_position = 0.0
+cache/0/10/0/underline_thickness = 0.0
+cache/0/10/0/scale = 1.0
+cache/0/10/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/10/0 = Vector2(0, 0)
+
+[node name="Splash" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2")
+
+[node name="InfoLabel" type="Label" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -56.5
+offset_top = -19.0
+offset_right = 56.5
+offset_bottom = -8.0
+theme_override_colors/font_color = Color(0.0588235, 0.219608, 0.0588235, 1)
+theme_override_fonts/font = SubResource("2")
+theme_override_font_sizes/font_size = 9
+text = "Press  the  button  to  start"
+
+[node name="Rear" type="Sprite2D" parent="."]
+position = Vector2(80, 72)
+texture = ExtResource("3")
+
+[node name="Logo" type="Sprite2D" parent="."]
+position = Vector2(80, 69)
+texture = ExtResource("5")
+
+[node name="Ship" type="Sprite2D" parent="."]
+position = Vector2(80, 68)
+texture = ExtResource("4")
+extends CanvasLayer
+
+enum Types { DEFAULT, SQUARES }
+
+const Square = preload("square/Square.tscn")
+
+@onready var animation_player := $AnimationPlayer as AnimationPlayer
+
+
+func change_scene_to_file(path: String, type: Types = Types.DEFAULT):
+	animation_player.play("Dissolve")
+
+	if type == Types.SQUARES:
+		for y in range(0, 9):
+			for x in range(0, 10):
+				var square := Square.instantiate() as TransitionsSquare
+
+				square.position = Vector2(
+					x * square.size + square.size / 2.0, y * square.size + square.size / 2.0
+				)
+
+				add_child(square)
+
+	await animation_player.animation_finished
+
+	var error_code := get_tree().change_scene_to_file(path)
+
+	if error_code:
+		print(error_code)
+
+	animation_player.play_backwards("Dissolve")
+[gd_scene load_steps=5 format=3 uid="uid://bkplkhi5sr818"]
+
+[ext_resource type="Script" path="res://transitions/Transitions.gd" id="1"]
+
+[sub_resource type="Animation" id="1"]
+resource_name = "Dissolve"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Color(1, 1, 1, 0), Color(1, 1, 1, 1)]
+}
+
+[sub_resource type="Animation" id="2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("ColorRect:modulate")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(1, 1, 1, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_nbylm"]
+_data = {
+"Dissolve": SubResource("1"),
+"RESET": SubResource("2")
+}
+
+[node name="Transitions" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+modulate = Color(1, 1, 1, 0)
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.776471, 0.815686, 0.615686, 1)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_nbylm")
+}
+animation_library = "AnimationLibrary_nbylm"
+animation_library_path = "res://AnimationLibrary.gclass_name TransitionsSquare
+
+extends Node2D
+
+var size := 16
+
+
+func _on_AnimationPlayer_animation_finished(_anim_name):
+	queue_free()
+[gd_scene load_steps=6 format=3 uid="uid://dqtjtu61h2dn6"]
+
+[ext_resource type="Texture2D" uid="uid://b77ky3k3au3pi" path="res://transitions/square/square.png" id="1"]
+[ext_resource type="Script" path="res://transitions/square/Square.gd" id="2"]
+
+[sub_resource type="Animation" id="2"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(1, 1)]
+}
+
+[sub_resource type="Animation" id="1"]
+resource_name = "RotateIn"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 180.0, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.5, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(1e-05, 1e-05), Vector2(1, 1), Vector2(1e-05, 1e-05)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_ograb"]
+_data = {
+"RESET": SubResource("2"),
+"RotateIn": SubResource("1")
+}
+
+[node name="Square" type="Node2D"]
+script = ExtResource("2")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+autoplay = "RotateIn"
+libraries = {
+"": SubResource("AnimationLibrary_ograb")
+}
+
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
+[connection signal="animation_start" from="AnimationPlayer" to="." method="_on_Animationclass_name StatusBar
+
+extends Control
+
+@onready var lives_label := $LivesLabel as Label
+@onready var score_label := $ScoreLabel as Label
+
+
+func _ready():
+	var error_code := Global.connect("score_changed", Callable(self, "_on_Global_score_changed"))
+
+	if error_code:
+		print(error_code)
+
+
+func _on_Global_score_changed():
+	score_label.text = "Score  %d" % Global.get_score()
+
+
+func _on_player_lives_changed(lives: int):
+	lives_label.text = "Lives  %d" % lives
+[gd_scene load_steps=5 format=3 uid="uid://ca3lws27wtksg"]
+
+[ext_resource type="FontFile" uid="uid://bpsefiotqlkol" path="res://fonts/ARCADECLASSIC.TTF" id="1"]
+[ext_resource type="Script" path="res://ui/status_bar/StatusBar.gd" id="2"]
+
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("1")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/10/0/ascent = 0.0
+cache/0/10/0/descent = 0.0
+cache/0/10/0/underline_position = 0.0
+cache/0/10/0/underline_thickness = 0.0
+cache/0/10/0/scale = 1.0
+cache/0/10/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/8/0/ascent = 0.0
+cache/0/8/0/descent = 0.0
+cache/0/8/0/underline_position = 0.0
+cache/0/8/0/underline_thickness = 0.0
+cache/0/8/0/scale = 1.0
+cache/0/8/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/9/0/ascent = 0.0
+cache/0/9/0/descent = 0.0
+cache/0/9/0/underline_position = 0.0
+cache/0/9/0/underline_thickness = 0.0
+cache/0/9/0/scale = 1.0
+cache/0/9/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/9/0 = Vector2(0, 0)
+
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("1")])
+face_index = null
+embolden = null
+transform = null
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/16/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/10/0/ascent = 0.0
+cache/0/10/0/descent = 0.0
+cache/0/10/0/underline_position = 0.0
+cache/0/10/0/underline_thickness = 0.0
+cache/0/10/0/scale = 1.0
+cache/0/10/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/10/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/8/0/ascent = 0.0
+cache/0/8/0/descent = 0.0
+cache/0/8/0/underline_position = 0.0
+cache/0/8/0/underline_thickness = 0.0
+cache/0/8/0/scale = 1.0
+cache/0/8/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/8/0/kerning_overrides/9/0 = Vector2(0, 0)
+cache/0/9/0/ascent = 0.0
+cache/0/9/0/descent = 0.0
+cache/0/9/0/underline_position = 0.0
+cache/0/9/0/underline_thickness = 0.0
+cache/0/9/0/scale = 1.0
+cache/0/9/0/kerning_overrides/16/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/10/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/8/0 = Vector2(0, 0)
+cache/0/9/0/kerning_overrides/9/0 = Vector2(0, 0)
+
+[node name="StatusBar" type="Control"]
+z_index = 2
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 0
+offset_right = 160.0
+offset_bottom = 12.0
+color = Color(0.776471, 0.815686, 0.615686, 1)
+
+[node name="ScoreLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 4.0
+offset_top = 1.0
+offset_right = 44.0
+offset_bottom = 15.0
+theme_override_colors/font_color = Color(0.0588235, 0.219608, 0.0588235, 1)
+theme_override_fonts/font = SubResource("1")
+theme_override_font_sizes/font_size = 9
+text = "SCORE  0"
+
+[node name="LivesLabel" type="Label" parent="."]
+layout_mode = 0
+offset_left = 124.0
+offset_top = 1.0
+offset_right = 156.0
+offset_bottom = 11.0
+theme_override_colors/font_color = Color(0.0588235, 0.219608, 0.0588235, 1)
+theme_override_fonts/font = SubResource("2")
+theme_override_font_sizes/font_size = 9
+text = "Lives  3"

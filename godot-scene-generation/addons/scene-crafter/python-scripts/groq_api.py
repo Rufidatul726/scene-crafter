@@ -1,0 +1,68 @@
+import os
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request, Response, status
+from groq import Groq
+
+app = FastAPI()
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+client = Groq(api_key=GROQ_API_KEY)
+
+SYSTEM_TEMPLATE = """The code should be in GDScript in Godot Engine. 
+If the user is asking for generating a scene, you should create a .tscn file. 
+If the user is asking for generating a script, you should create a .gd file.
+If the user is asking for correcting an error, you should provide the corrected code in that godot {version}.
+If the user is asking for a tutorial, you should provide a step-by-step guide.
+If the user is asking for a code snippet, you should provide a code snippet.
+If the user is asking for a code explanation, you should provide an explanation of the code.
+"""
+
+@app.post("/recommend/")
+async def generate_recommendation(messages: list):
+    print(messages)
+    completion = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=messages,
+        temperature=1,
+        max_tokens=1024,
+        top_p=1,
+        stream=True,
+    )
+
+    response = ""
+    for chunk in completion:
+        response += chunk.choices[0].delta.content or ""
+    return {"response": response}
+
+@app.post("/generate")
+async def generate_response(request: Request):
+    try:
+        input_data = await request.json()
+        user_input = input_data.get("input")
+        if not user_input:
+            return Response(content="Input text missing", status_code=status.HTTP_400_BAD_REQUEST)
+        
+        user_input = SYSTEM_TEMPLATE + user_input
+
+        print(user_input)
+        completion = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[{"role": "system", "content": user_input}],
+            temperature=1,
+            max_tokens=1024,
+            top_p=1,
+            stream=True,
+        )
+
+        response = ""
+        for chunk in completion:
+            print(chunk.choices[0].delta.content)
+            response += chunk.choices[0].delta.content or ""
+        return {"response": response}
+    except Exception as e:
+        print(e)
+        return {"response": str(e)}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="localhost", port=8000)

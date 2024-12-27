@@ -4,6 +4,9 @@ extends Control
 @onready var input= $VBoxContainer/HBoxContainer/TextEdit
 @onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
 
+var apiUrl= "https://api.groq.com/openai/v1/chat/completions"
+var model= "llama3-8b-8192"
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	sendButton.connect("pressed", Callable(self, "_on_SubmitButton_pressed"))
@@ -16,6 +19,7 @@ func _process(delta: float) -> void:
 func _on_send_button_pressed() -> void:
 	var text_input = input.text 
 	print("User input:", text_input)
+	print(OS.get_executable_path().get_base_dir())
 	var version_info = Engine.get_version_info() 
 	print("Godot Version: %s.%s.%s" % [version_info["major"], version_info["minor"], version_info["patch"]])
 	

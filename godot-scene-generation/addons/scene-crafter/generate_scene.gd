@@ -4,8 +4,9 @@ extends Control
 @onready var input= $VBoxContainer/HBoxContainer/TextEdit
 @onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
 
-var apiUrl= "https://api.groq.com/openai/v1/chat/completions"
-var model= "llama3-8b-8192"
+#var apiUrl= "https://api.groq.com/openai/v1/chat/completions"
+#var model= "llama3-8b-8192"
+#var GROQ_API_KEY= ""
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

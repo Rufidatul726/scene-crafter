@@ -9,8 +9,14 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 client = Groq(api_key=GROQ_API_KEY)
 
 SYSTEM_TEMPLATE = """The code should be in GDScript in Godot Engine. 
-If the user is asking for generating a scene, you should create a .tscn file. 
-If the user is asking for generating a script, you should create a .gd file.
+A project is already created in the engine. Just do as the user asks. Do not write extra explanations.
+Always strictly adhere to the format.
+
+Task:
+Create a scene with a moving camera, a player character with basic physics, and background music. Generate a `.tscn` file directly, with no additional comments or steps.
+
+If the user is asking for generating a scene, you should generate a .tscn file and no need to say the steps or explaination. 
+If the user is asking for generating a script, you should create a .gd file and and no need to say the steps or explaination.
 If the user is asking for correcting an error, you should provide the corrected code in that godot {version}.
 If the user is asking for a tutorial, you should provide a step-by-step guide.
 If the user is asking for a code snippet, you should provide a code snippet.
@@ -19,7 +25,7 @@ If the user is asking for a code explanation, you should provide an explanation 
 
 @app.post("/recommend/")
 async def generate_recommendation(messages: list):
-    print(messages)
+    messages = [{"role": "system", "content": SYSTEM_TEMPLATE}] + [{"role": "user", "content": message} for message in messages]
     completion = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=messages,
@@ -44,7 +50,6 @@ async def generate_response(request: Request):
         
         user_input = SYSTEM_TEMPLATE + user_input
 
-        print(user_input)
         completion = client.chat.completions.create(
             model="llama3-8b-8192",
             messages=[{"role": "system", "content": user_input}],

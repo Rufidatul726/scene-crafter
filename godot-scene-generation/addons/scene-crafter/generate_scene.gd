@@ -4,18 +4,9 @@ extends Control
 @onready var input= $VBoxContainer/HBoxContainer/TextEdit
 @onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
 
-#var apiUrl= "https://api.groq.com/openai/v1/chat/completions"
-#var model= "llama3-8b-8192"
-#var GROQ_API_KEY= ""
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	sendButton.connect("pressed", Callable(self, "_on_SubmitButton_pressed"))
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
-
 
 func _on_send_button_pressed() -> void:
 	var text_input = input.text 

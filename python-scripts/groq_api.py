@@ -14,9 +14,25 @@ Always strictly adhere to the format.
 
 Task:
 Create a scene with a moving camera, a player character with basic physics, and background music. Generate a `.tscn` file directly, with no additional comments or steps.
+If you're creating a file remember the file folder structure: res://scene-crafter-generated-scene. then the file name should be there. do not forget to include the file extension. 
+If the user is asking for generating a scene, you should generate a .tscn file and no need to say the steps or explaination. like this:
+```
+[gd_scene load_steps=2 format=2]
+[sub_resource type="PackedScene" id=1]
+resource_name = "Main"
+class_name = "Node"
+```
+If the user is asking for generating a script, you should create a .gd file and and no need to say the steps or explaination.like this:
+```
+extends Node
 
-If the user is asking for generating a scene, you should generate a .tscn file and no need to say the steps or explaination. 
-If the user is asking for generating a script, you should create a .gd file and and no need to say the steps or explaination.
+func _ready():
+    my_var = 5
+
+func _process(delta):
+    if Input.is_action_pressed("ui_right"):
+    
+```
 If the user is asking for correcting an error, you should provide the corrected code in that godot {version}.
 If the user is asking for a tutorial, you should provide a step-by-step guide.
 If the user is asking for a code snippet, you should provide a code snippet.

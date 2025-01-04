@@ -2,7 +2,7 @@
 extends EditorPlugin
 
 var dock
-var scene_folder := "res://scene-crafter-generated-scene"
+var scene_folder := "res://addons/scene-crafter/generated-scene"
 var log_folder := "user://scene-crafter-logs"
 
 func _enter_tree() -> void:

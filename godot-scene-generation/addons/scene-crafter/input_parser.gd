@@ -3,11 +3,17 @@ extends Node
 func parse_input(input: String):
 	var input_string = input.strip_edges().to_lower()
 	var task_type = get_task(input_string)
-	print(task_type)
+	
+	if task_type == "creating scene":
+		print("Create Scene Task Detected")
+		var nodes_to_create = get_Node(input_string)
+		return true
+	
+	return false
 	
 func get_task(input: String)-> String:
 	var tasks = {
-		"creating scene": ["scene", "create a scene", "build a scene", "design", "scene creation"],
+		"creating scene": ["scene", "create a scene", "build a scene", "make scene", "design", "scene creation"],
 		"creating script": ["script", "write", "program", "code", "create script"],
 		"explaining code": ["explain", "understand", "code", "describe"],
 		"explaining error": ["error", "debug", "issue", "explain error"],

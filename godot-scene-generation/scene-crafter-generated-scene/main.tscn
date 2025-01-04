@@ -1,0 +1,39 @@
+res://scene-crafter-generated-scene/main.tscn
+
+	[node id=1]
+	resource_name = "Main"
+	class_name = "Node"
+	[node type="Camera" id=2]
+	name = "MainCamera"
+	Add CHILD camera
+	/add CHILD end
+	[node type="RigidBody3D" id=3]
+	name = "Player"
+	add CHILD spatial
+	[/add CHILD end]
+	[node type="Spatial" id=4]
+	name = "Background"
+	[/node]
+	[/node]
+
+	[node type="AudioStreamPlayer" id=5]
+	name = "BackgroundMusic"
+	[/node]
+
+	[node type="Node" id=6]
+	name = "Root"
+	add CHILD MainCamera
+	add CHILD Player
+	add CHILD Background
+	add CHILD BackgroundMusic
+	[/add CHILD end]
+	[/node]
+
+	[script id=1 language="gd" type="NodeScript"]
+	extends Node
+
+	func _ready():
+		var player = $Player
+		player.add_child(player.$CollisionShape3D)
+	[/script]
+	

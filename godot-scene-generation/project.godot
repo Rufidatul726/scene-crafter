@@ -10,10 +10,10 @@ config_version=5
 
 [application]
 
-config/name="Scene Crafter"
+config/name="godot-scene-generation"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/scene_crafter/plugin.cfg")
+enabled=PackedStringArray("res://addons/scene-crafter/plugin.cfg")

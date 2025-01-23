@@ -1,0 +1,97 @@
+@tool
+extends Control
+
+@onready var input= $VBoxContainer/HBoxContainer/TextEdit
+@onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	sendButton.connect("pressed", Callable(self, "_on_SubmitButton_pressed"))
+
+func _on_send_button_pressed() -> void:
+	var text_input = input.text 
+	print("User input:", text_input)
+	print(OS.get_executable_path().get_base_dir())
+	var version_info = Engine.get_version_info() 
+	print("Godot Version: %s.%s.%s" % [version_info["major"], version_info["minor"], version_info["patch"]])
+	
+	var json_data = {
+		"input": text_input,
+		"version": version_info["major"]
+	}
+	
+	var scene_path= "res://scene-crafter-generated-scene/main.tscn"
+	var response= """res://scene-crafter-generated-scene/main.tscn
+
+	[node id=1]
+	resource_name = "Main"
+	class_name = "Node"
+	[node type="Camera" id=2]
+	name = "MainCamera"
+	Add CHILD camera
+	/add CHILD end
+	[node type="RigidBody3D" id=3]
+	name = "Player"
+	add CHILD spatial
+	[/add CHILD end]
+	[node type="Spatial" id=4]
+	name = "Background"
+	[/node]
+	[/node]
+
+	[node type="AudioStreamPlayer" id=5]
+	name = "BackgroundMusic"
+	[/node]
+
+	[node type="Node" id=6]
+	name = "Root"
+	add CHILD MainCamera
+	add CHILD Player
+	add CHILD Background
+	add CHILD BackgroundMusic
+	[/add CHILD end]
+	[/node]
+
+	[script id=1 language="gd" type="NodeScript"]
+	extends Node
+
+	func _ready():
+		var player = $Player
+		player.add_child(player.$CollisionShape3D)
+	[/script]
+	"""
+
+	create_scene(scene_path, response)
+	
+	#var http := HTTPRequest.new()
+	#add_child(http)
+	#http.connect("request_completed", Callable(self, "_on_request_completed"))
+	#
+	#http.request(
+		#"http://127.0.0.1:8000/generate",  # Your Python server endpoint
+		#["Content-Type: application/json"], # Headers
+		#HTTPClient.METHOD_POST,
+		#JSON.stringify(json_data)
+	#)
+	
+#func _on_request_completed(result, response_code, headers, body) -> void:
+	#if response_code == 200:
+		#var response = JSON.parse_string(body.get_string_from_utf8())
+		#print("Response from Python:", response["response"])
+		#var scene_path = response["response"].split("\n")[0]
+		#create_scene(scene_path, response["response"])
+	#else:
+		#var response = JSON.parse_string(body.get_string_from_utf8())
+		#print("Error:", response_code, response)
+
+func create_scene(scene_path, response):
+	var scene= FileAccess.open(scene_path,FileAccess.WRITE)
+	print(scene_path)
+	if scene.is_open():
+		print(response)
+		scene.store_string(response)  
+		scene.close()
+		print("Scene saved successfully.")
+	else:
+		print("scne could not created")
+	

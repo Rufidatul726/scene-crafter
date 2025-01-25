@@ -36,20 +36,6 @@ func _on_send_button_pressed() -> void:
 func _on_request_completed(result, response_code, headers, body) -> void:
 	var response = JSON.parse_string(body.get_string_from_utf8())
 	if response_code == 200:
-		print("Response from Python:", response["response"])
-		#var scene_path = response["response"].split("\n")[0]
-		#create_scene(scene_path, response["response"])
+		print("Response from Python:", response)
 	else:
 		print("Error:", response_code, response)
-
-func create_scene(scene_path, response):
-	var scene= FileAccess.open(scene_path,FileAccess.WRITE)
-	print(scene_path)
-	if scene.is_open():
-		print(response)
-		scene.store_string(response)  
-		scene.close()
-		print("Scene saved successfully.")
-	else:
-		print("scne could not created")
-	

@@ -11,9 +11,16 @@ config_version=5
 [application]
 
 config/name="godot-scene-generation"
+run/main_scene="res://addons/scene-crafter/generate_scene.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/scene-crafter/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://addons/scene-crafter/": "purple"
+}

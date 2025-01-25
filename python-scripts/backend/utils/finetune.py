@@ -1,6 +1,17 @@
 import torch
+import os
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, Seq2SeqTrainingArguments, Seq2SeqTrainer
 from datasets import load_dataset
+
+BASE_MODEL_NAME = "Salesforce/codet5-small"
+FINE_TUNED_DIR = "./codeT5-fine-tuned"
+
+base_dir = os.path.dirname(os.path.abspath(__file__)) # Get the directory of finetune.py
+one_level_back = os.path.normpath(base_dir + os.sep + os.pardir)
+two_levels_back = os.path.normpath(one_level_back + os.sep + os.pardir)
+print(two_levels_back)
+INITIAL_TRAIN_DIR = "./data/train.json"
+UPDATED_TRAIN_FILE = "./logs/train.json"
 
 # Model and tokenizer
 MODEL_NAME = "Salesforce/codet5-small"

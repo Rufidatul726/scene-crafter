@@ -38,7 +38,7 @@ def main():
     os.environ["HF_HOME"] = cache_dir
 
     # Step 4: Install essential dependencies
-    dependencies = ["python-dotenv", "huggingface-hub", "transformers", "datasets", "fastapi[standard]", "torch", "protobuf" ,"uvicorn"]
+    dependencies = ["python-dotenv", "huggingface-hub", "transformers", "datasets", "fastapi[standard]", "torch", "protobuf" ,"uvicorn", "scikit-learn"]
     subprocess.run([venv_python, "install", *dependencies], shell=True, check=True)
     
     # Step 5: Import necessary modules

@@ -5,6 +5,8 @@ import os
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
 from utils.constants import get_template
+from utils.train import train
+from utils.postprocess.index import validate
 
 app = FastAPI()
 
@@ -20,6 +22,22 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"message": "Welcome to the scene generation API!"}
+
+@app.get("getdir")
+def get_dir():
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    log_dir = os.path.join(base_dir, "files", "log_files")
+    os.makedirs(log_dir, exist_ok=True)
+    return {"message": log_dir}
+
+# Define an endpoint to train the model
+@app.get("/train_model/")
+async def train_model():
+    try:
+        await train()
+        return {"message": "Model trained successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 # Define a function to generate code
 @app.post("/generate_scene/")
@@ -44,6 +62,8 @@ async def generate_scene(request: Request):
         outputs = model.generate(inputs.input_ids, max_length=512)
         tscn_content = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
+        tscn_content=validate(scene_content=tscn_content)
+        
         # Save the .tscn file
         filename = f"generated_scene_{hash(prompt)}.tscn"
         base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of app.py
@@ -51,7 +71,6 @@ async def generate_scene(request: Request):
         two_levels_back = os.path.normpath(one_level_back + os.sep + os.pardir)
         print(two_levels_back)
         output_dir = os.path.join(two_levels_back, "godot-scene-generation","scene-crafter-generated-scene")
-        # output_dir = os.path.join("..", "scene_gen", "scene_crafter_gen_scene")
         os.makedirs(output_dir, exist_ok=True)
         print(output_dir)
         file_path = os.path.join(output_dir, filename)

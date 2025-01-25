@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3tm5flv6e4qs"]
+
+[ext_resource type="Script" path="res://copilot.gd" id="1_x7n7p"]
+
+[node name="Copilot" type="Control"]
+layout_mode = 3
+anchor_right = 1.003
+anchor_bottom = 1.0
+offset_right = -0.456055
+offset_bottom = -3.0
+script = ExtResource("1_x7n7p")
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[node name="TextEdit" type="TextEdit" parent="."]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 1.0

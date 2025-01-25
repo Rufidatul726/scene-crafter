@@ -16,73 +16,31 @@ func _on_send_button_pressed() -> void:
 	print("Godot Version: %s.%s.%s" % [version_info["major"], version_info["minor"], version_info["patch"]])
 	
 	var json_data = {
-		"input": text_input,
+		"prompt": text_input,
 		"version": version_info["major"]
 	}
 	
 	var scene_path= "res://scene-crafter-generated-scene/main.tscn"
-	var response= """res://scene-crafter-generated-scene/main.tscn
-
-	[node id=1]
-	resource_name = "Main"
-	class_name = "Node"
-	[node type="Camera" id=2]
-	name = "MainCamera"
-	Add CHILD camera
-	/add CHILD end
-	[node type="RigidBody3D" id=3]
-	name = "Player"
-	add CHILD spatial
-	[/add CHILD end]
-	[node type="Spatial" id=4]
-	name = "Background"
-	[/node]
-	[/node]
-
-	[node type="AudioStreamPlayer" id=5]
-	name = "BackgroundMusic"
-	[/node]
-
-	[node type="Node" id=6]
-	name = "Root"
-	add CHILD MainCamera
-	add CHILD Player
-	add CHILD Background
-	add CHILD BackgroundMusic
-	[/add CHILD end]
-	[/node]
-
-	[script id=1 language="gd" type="NodeScript"]
-	extends Node
-
-	func _ready():
-		var player = $Player
-		player.add_child(player.$CollisionShape3D)
-	[/script]
-	"""
-
-	create_scene(scene_path, response)
 	
-	#var http := HTTPRequest.new()
-	#add_child(http)
-	#http.connect("request_completed", Callable(self, "_on_request_completed"))
-	#
-	#http.request(
-		#"http://127.0.0.1:8000/generate",  # Your Python server endpoint
-		#["Content-Type: application/json"], # Headers
-		#HTTPClient.METHOD_POST,
-		#JSON.stringify(json_data)
-	#)
+	var http := HTTPRequest.new()
+	add_child(http)
+	http.connect("request_completed", Callable(self, "_on_request_completed"))
 	
-#func _on_request_completed(result, response_code, headers, body) -> void:
-	#if response_code == 200:
-		#var response = JSON.parse_string(body.get_string_from_utf8())
-		#print("Response from Python:", response["response"])
+	http.request(
+		"http://127.0.0.1:8000/generate_scene/",  # Your Python server endpoint
+		["Content-Type: application/json"], # Headers
+		HTTPClient.METHOD_POST,
+		JSON.stringify(json_data)
+	)
+	
+func _on_request_completed(result, response_code, headers, body) -> void:
+	var response = JSON.parse_string(body.get_string_from_utf8())
+	if response_code == 200:
+		print("Response from Python:", response["response"])
 		#var scene_path = response["response"].split("\n")[0]
 		#create_scene(scene_path, response["response"])
-	#else:
-		#var response = JSON.parse_string(body.get_string_from_utf8())
-		#print("Error:", response_code, response)
+	else:
+		print("Error:", response_code, response)
 
 func create_scene(scene_path, response):
 	var scene= FileAccess.open(scene_path,FileAccess.WRITE)

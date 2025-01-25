@@ -18,12 +18,27 @@ anchor_bottom = 1.005
 offset_right = 1.0
 offset_bottom = -0.22998
 
-[node name="title" type="Label" parent="VBoxContainer"]
+[node name="MainMenu" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+
+[node name="title" type="Label" parent="VBoxContainer/MainMenu"]
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 25
 text = "Scene Crafter"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainMenu"]
+layout_mode = 2
+
+[node name="setting" type="Button" parent="VBoxContainer/MainMenu/HBoxContainer"]
+layout_mode = 2
+text = "Settings"
+
+[node name="train" type="Button" parent="VBoxContainer/MainMenu/HBoxContainer"]
+layout_mode = 2
+text = "Train Model"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2

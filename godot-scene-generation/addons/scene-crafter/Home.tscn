@@ -1,0 +1,75 @@
+[gd_scene load_steps=3 format=3 uid="uid://dwo2bsenowjly"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_b05jl"]
+font_size = 25
+shadow_size = 5
+shadow_color = Color(0.358998, 0.454123, 0.962115, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_p6ewi"]
+font_size = 20
+font_color = Color(0.815686, 0.796078, 0.988235, 0.984314)
+
+[node name="Home" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 1.003
+offset_bottom = 0.0559692
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="titleBox" type="VBoxContainer" parent="VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label" type="Label" parent="VBoxContainer/HBoxContainer/titleBox"]
+layout_mode = 2
+text = "Scene Crafter"
+label_settings = SubResource("LabelSettings_b05jl")
+horizontal_alignment = 1
+
+[node name="Label2" type="Label" parent="VBoxContainer/HBoxContainer/titleBox"]
+layout_mode = 2
+text = "Automating Scene Setup and Recommending Next Step in Godot"
+label_settings = SubResource("LabelSettings_p6ewi")
+horizontal_alignment = 1
+
+[node name="ItemBox" type="VBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 6.0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/ItemBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Sidebar" type="VBoxContainer" parent="VBoxContainer/ItemBox/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="code-suggestion" type="Button" parent="VBoxContainer/ItemBox/HBoxContainer/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Suggest Code"
+
+[node name="scene-generation" type="Button" parent="VBoxContainer/ItemBox/HBoxContainer/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Generate Scene"
+
+[node name="train-model" type="Button" parent="VBoxContainer/ItemBox/HBoxContainer/Sidebar"]
+layout_mode = 2
+size_flags_vertical = 3
+text = "Train Model"

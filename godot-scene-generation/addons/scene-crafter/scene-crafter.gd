@@ -2,7 +2,9 @@
 extends EditorPlugin
 
 const starting_gdscript: String = "the code should be in gdscript for godot game engine"
-const ending_gdscript: String= "you should complete rest of the code. no extra conversation"
+const ending_gdscript: String= "you should complete the code. no extra conversation"
+const REQUEST_COOLDOWN: float = 180.0  # 3 minutes
+const FILE_REQUEST_COOLDOWN: float = 900.0  # 15 minutes
 
 var dock
 var scene_folder := "res://addons/scene-crafter/generated-scene"
@@ -19,10 +21,13 @@ var prompt_input : TextEdit
 var response_label : Label
 var copilot
 
-
 var last_opened_file: String = ""  # Tracks the last active file 
 var last_scene_file: String= "" # Tracks the last active scene
 var timer: Timer  # Timer for global polling
+
+var cooldown_timer: Timer
+var can_request: bool = true
+var file_request_tracker: Dictionary = {}  # Tracks last request times for individual files
 
 var flag=true
 
@@ -33,23 +38,42 @@ func _enter_tree() -> void:
 	_start_polling_global_changes()
 	connect_signals()
 	
+	cooldown_timer = Timer.new()
+	cooldown_timer.wait_time = 300  # 3 minutes in seconds
+	cooldown_timer.one_shot = true
+	cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
+	add_child(cooldown_timer)
+	
+	http_request = HTTPRequest.new()
+	add_child(http_request)
+	http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+	
+	#copilot= preload("res://addons/scene-crafter/copilot.tscn").instantiate()
+	#add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_BR, copilot)
+	#copilot.hide()
 	#start_monitoring()
 
 func _exit_tree() -> void:
 	remove_control_from_docks(dock)
 	dock.free()
 	
+	if(copilot!=null):
+		remove_control_from_docks(copilot)
+		copilot.free()
+		
+	cooldown_timer.queue_free()
+	http_request.queue_free()
 	_stop_polling_global_changes()
 	disconnect_signals()
 	print("CoPilot Disabled.")
 	
-	#if(copilot || flag):
-		#copilot._exit_tree()
-	
 func start_monitoring():
-	http_request= HTTPRequest.new()
-	add_child(http_request)
-	http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+	if can_request:
+		# Initiate the request only if the cooldown has finished
+		can_request = false
+		http_request= HTTPRequest.new()
+		add_child(http_request)
+		http_request.connect("request_completed", Callable(self, "_on_request_completed"))
 	
 	var body = {
 		"messages": [
@@ -68,7 +92,6 @@ func start_monitoring():
 		["Content-Type: application/json",
 		"Authorization: Bearer %s" % api_key], # Headers
 		HTTPClient.METHOD_POST,
-		
 	)
 
 func _on_request_completed(result, response_code, headers, body) -> void:
@@ -137,7 +160,7 @@ func _check_active_scene():
 # Track opened file changes and output on change
 func _check_opened_file():
 	var opened_file = _get_opened_file()
-	if opened_file and opened_file != last_opened_file:
+	if opened_file and opened_file != last_opened_file and opened_file!= "":
 		print("Opened file switched to:", opened_file)
 		last_opened_file = opened_file
 		
@@ -151,3 +174,8 @@ func _get_opened_file() -> String:
 		if current_script:
 			return current_script.resource_path
 	return ""
+
+func _on_cooldown_finished() -> void:
+	# Reset the flag when the cooldown finishes
+	can_request = true
+	print("Cooldown period finished. You can now make another request.")

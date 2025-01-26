@@ -162,6 +162,7 @@ cython_debug/
 #.idea/
 
 .godot/
+secrets.gd
 
 project_directory/
 cache_directory/

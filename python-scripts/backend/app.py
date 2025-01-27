@@ -7,6 +7,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 from utils.constants import get_template
 from utils.train import train
 from utils.postprocess.index import validate
+from utils.monitoring.log import add_entry_in_logger
 
 app = FastAPI()
 
@@ -69,7 +70,7 @@ async def generate_scene(request: Request):
         base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of app.py
         one_level_back = os.path.normpath(base_dir + os.sep + os.pardir)
         two_levels_back = os.path.normpath(one_level_back + os.sep + os.pardir)
-        print(two_levels_back)
+        
         output_dir = os.path.join(two_levels_back, "godot-scene-generation","scene-crafter-generated-scene")
         os.makedirs(output_dir, exist_ok=True)
         print(output_dir)
@@ -77,6 +78,7 @@ async def generate_scene(request: Request):
         with open(file_path, "w") as f:
             f.write(tscn_content)
 
+        add_entry_in_logger(prompt, file_path)
         return {"message": "Scene generated successfully", "file": file_path}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

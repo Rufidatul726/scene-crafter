@@ -4,7 +4,7 @@ from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, TrainingArguments
 from sklearn.model_selection import train_test_split
 from datasets import Dataset
 
-from preprocess import preprocess_data, preprocess_function
+from utils.preprocess import preprocess_data, preprocess_function
 
 def train():
     base_dir = os.path.dirname(os.path.abspath(__file__))  

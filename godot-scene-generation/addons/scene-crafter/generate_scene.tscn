@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dooo1jqbn60wg"]
+[gd_scene load_steps=3 format=3 uid="uid://dooo1jqbn60wg"]
 
 [ext_resource type="Script" path="res://addons/scene-crafter/generate_scene.gd" id="1_4y01a"]
+[ext_resource type="Script" path="res://addons/scene-crafter/train.gd" id="2_2iudt"]
 
 [node name="generate-scene" type="Control"]
 layout_mode = 3
@@ -32,13 +33,10 @@ vertical_alignment = 1
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainMenu"]
 layout_mode = 2
 
-[node name="setting" type="Button" parent="VBoxContainer/MainMenu/HBoxContainer"]
-layout_mode = 2
-text = "Settings"
-
 [node name="train" type="Button" parent="VBoxContainer/MainMenu/HBoxContainer"]
 layout_mode = 2
 text = "Train Model"
+script = ExtResource("2_2iudt")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
 layout_mode = 2

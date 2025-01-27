@@ -39,14 +39,14 @@ func _enter_tree() -> void:
 	connect_signals()
 	
 	cooldown_timer = Timer.new()
-	cooldown_timer.wait_time = 300  # 3 minutes in seconds
+	cooldown_timer.wait_time = 180  # 3 minutes in seconds
 	cooldown_timer.one_shot = true
 	cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
 	add_child(cooldown_timer)
 	
-	http_request = HTTPRequest.new()
-	add_child(http_request)
-	http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+	#http_request = HTTPRequest.new()
+	#add_child(http_request)
+	#http_request.connect("request_completed", Callable(self, "_on_request_completed"))
 	
 	#copilot= preload("res://addons/scene-crafter/copilot.tscn").instantiate()
 	#add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_BR, copilot)
@@ -73,35 +73,34 @@ func start_monitoring():
 		can_request = false
 		http_request= HTTPRequest.new()
 		add_child(http_request)
-		http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+		http_request.connect("request_completed", Callable(self, "_on_request_completed_on_monitor"))
 	
-	var body = {
-		"messages": [
-		{
-			"role": "user",
-			"content": prompt_input
+		var body = {
+			"messages": [
+			{
+				"role": "user",
+				"content": prompt_input
+			}
+			],
+			"model": "llama-3.3-70b-versatile"
 		}
-		],
-		"model": "llama-3.3-70b-versatile"
-	}
-	
-	var json_body = JSON.stringify(body)
-	
-	http_request.request(
-		"http://127.0.0.1:8000/getdir/",
-		["Content-Type: application/json",
-		"Authorization: Bearer %s" % api_key], # Headers
-		HTTPClient.METHOD_POST,
-	)
+		
+		var json_body = JSON.stringify(body)
+		
+		http_request.request(
+			"http://127.0.0.1:8000/getdir/",
+			["Content-Type: application/json",
+			"Authorization: Bearer %s" % api_key], # Headers
+			HTTPClient.METHOD_POST,
+		)
 
-func _on_request_completed(result, response_code, headers, body) -> void:
+func _on_request_completed_on_monitor(result, response_code, headers, body) -> void:
 	var response = JSON.parse_string(body.get_string_from_utf8())
 	if response_code == 200:
 		print("Response from Python:", response)
 	else:
 		print("Error:", response_code, response)
 	
-
 # Timer polling for both active scene and open file changes
 # Timer polling for both active scene and global project changes
 func _start_polling_global_changes():
@@ -163,8 +162,131 @@ func _check_opened_file():
 	if opened_file and opened_file != last_opened_file and opened_file!= "":
 		print("Opened file switched to:", opened_file)
 		last_opened_file = opened_file
+		var current_time = Time.get_time_dict_from_system()
+		_make_request_for_file(opened_file)
+
+# Determine if a request is allowed for a file
+func _make_request_for_file(file_path: String):
+	var current_time = Time.get_unix_time_from_system()
+	print("current time= ")
+	print(current_time)
+	if file_request_tracker.has(file_path):
+		if current_time - file_request_tracker[file_path] < FILE_REQUEST_COOLDOWN:
+			print("Skipping request for file '%s'. Last request was less than 15 minutes ago." % file_path)
+			return
+	# If no cooldown or allowed, send the request
+	if can_request:
+		file_request_tracker[file_path] = current_time
+		_send_http_request(file_path)
+	else:
+		print("Global cooldown active. Wait for %s seconds before the next request." % REQUEST_COOLDOWN)
+
+# Send HTTP request for the opened file
+func _send_http_request(file_path: String):
+	var filecontent
+	var file= FileAccess.open(file_path, FileAccess.READ)
+	if file:
+		print("File opened successfully")
+		filecontent= file.get_as_text()
+		file.close()
+		var body = {
+			"message":  starting_gdscript +
+					" Generate data for filedata: %s"  % filecontent
+					+ ending_gdscript
+			#"model": "llama-3.3-70b-versatile"
+		}
+		var json_body = JSON.stringify(body)
 		
+		var headers = {
+			"Content-Type": "application/json", # Replace with the desired content type
+			"Authorization": "Bearer YOUR_ACCESS_TOKEN" # Replace 'YOUR_ACCESS_TOKEN' with your actual token
+		}
 		
+		http_request.connect("request_completed", Callable(self, "_on_request_completed"))
+
+		http_request.request(
+			"http://localhost:8001/recommend/",
+			#"https://api-inference.huggingface.co/models/bigcode/starcoder",
+			["Content-Type: application/json"],
+			#["Authorization: Bearer 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"],  # Headers
+			HTTPClient.METHOD_POST,
+			json_body
+		)
+		
+		can_request = false
+		cooldown_timer.start()
+
+func _on_request_completed(result: int, response_code: int, headers: Array, body) -> void:
+	# Parse the response
+	var response = JSON.parse_string(body.get_string_from_utf8())
+
+	if response_code == 200:
+		print("Response received:", response)
+		
+		# Extract the code content
+		if response.has("response"):
+			var script_code: String = response["response"]
+			var start_index = script_code.find("```")
+			 # Find the position of the first occurrence of "extends" or "@"
+			var extend_index = script_code.find("extends")
+			var at_index = script_code.find("@")
+			script_code = script_code.strip_edges()  # First remove general whitespace from both ends
+			var first_index = script_code.find("```")
+			var first_extend_index= script_code.find("extends")
+			var first_at_index=script_code.find("@")
+			
+			var start_index_at_extendorat = -1
+
+			# Determine which comes first ("extends" or "@")
+			if extend_index != -1 and (at_index == -1 or extend_index < at_index):
+				start_index_at_extendorat = extend_index  # "extends" found
+			elif at_index != -1:
+				start_index_at_extendorat = at_index  # "@" found
+			
+			if first_index != -1:
+				# Find the position of the second occurrence of "```"
+				var second_index = script_code.find("```", first_index + 3)  # Starting search after the first "```"
+
+				if second_index != -1:
+					# Extract the substring between the first and second "```"
+					script_code = script_code.substr(first_index + 3, second_index - first_index - 3)
+
+					# Optionally, remove any trailing "```" or unwanted characters at the end
+					script_code = script_code.strip_edges()
+
+					if script_code != "":
+						# Write the code to the last opened file
+						print(last_opened_file)
+						if last_opened_file != "":
+							_replace_file_content(last_opened_file, script_code)
+					else:
+						print("No file is currently open to replace content.")
+				else:
+					print("Second ``` not found in the string.")
+			elif start_index_at_extendorat!= -1:
+				pass
+			else:
+				print("could not start to make script from the string.")
+		else:
+			print("Response does not contain a 'response' field.")
+	else:
+		print("Request failed with code %s: %s" % [response_code, response])
+
+
+func _replace_file_content(file_path: String, new_content: String) -> void:
+	var file := FileAccess.open(file_path, FileAccess.WRITE)
+	if file:
+		file.store_string(new_content)
+		file.close()
+		print("File content replaced successfully: %s" % file_path)
+		print("File has been updated. Reloading in the editor...")
+
+		# Trigger the refresh in the editor
+		EditorInterface.reload_scene_from_path(last_opened_file)
+		#EditorInterface.open_scene_from_path(last_opened_file)
+	else:
+		print("Failed to open file '%s' for writing. Error code: %s" % [file_path, file])
+
 
 # Get the currently opened script or file
 func _get_opened_file() -> String:

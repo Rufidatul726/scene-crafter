@@ -40,8 +40,10 @@ If the user is asking for a code explanation, you should provide an explanation 
 """
 
 @app.post("/recommend/")
-async def generate_recommendation(messages: list):
-    messages = [{"role": "system", "content": SYSTEM_TEMPLATE}] + [{"role": "user", "content": message} for message in messages]
+async def generate_recommendation(messages: Request):
+    messages = await messages.json()
+    message = messages.get("message")
+    messages = [{"role": "user", "content": message}]
     completion = client.chat.completions.create(
         model="llama3-8b-8192",
         messages=messages,
@@ -86,4 +88,4 @@ async def generate_response(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=8001)

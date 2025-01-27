@@ -2,8 +2,8 @@ from fastapi import FastAPI, Request, Response, status
 from gpt4all import GPT4All
 
 app = FastAPI()
-model = GPT4All(model_name="Llama-3.2-3B-Instruct-Q4_0.gguf", verbose=True)
-# model = GPT4All(model_name="qwen2-1_5b-instruct-q4_0.gguf", model_path="E:\Programs\gpt4all\qwen2-1_5b-instruct-q4_0.gguf")
+# model = GPT4All(model_name="Llama-3.2-3B-Instruct-Q4_0.gguf", verbose=True)
+model = GPT4All(model_name="qwen2-1_5b-instruct-q4_0.gguf", model_path="E:\Programs\gpt4all")
 print("Model loaded successfully.")
 
 SYSTEM_TEMPLATE = """The code should be for Godot Engine. do not give me steps.
@@ -34,12 +34,13 @@ If the user is asking for a code explanation, you should provide an explanation 
 MAX_LENGTH = 8500
 MAX_TOKENS = 2048
 
-@app.post("/generate")
+@app.post("/generate_scene/")
 async def generate(request: Request):
+    print(request)
     try:
-        
         input_data = await request.json()
-        user_input = input_data.get("input")
+        print(input_data)
+        user_input = input_data.get("prompt")
         if not user_input:
             return Response(content="Input text missing", status_code=status.HTTP_400_BAD_REQUEST)
         

@@ -1,11 +1,10 @@
 import json
 import os
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, TrainingArguments, Trainer, EarlyStoppingCallback, DataCollatorForSeq2Seq, AutoModelForCausalLM, DataCollatorForLanguageModeling
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, TrainingArguments, Trainer, EarlyStoppingCallback, DataCollatorForSeq2Seq
 from sklearn.model_selection import train_test_split
 from datasets import Dataset
 
 from utils.preprocess import preprocess_data, preprocess_function
-from utils.tokenizer import set_tokenizer
 
 def train():
     base_dir = os.path.dirname(os.path.abspath(__file__))  
@@ -25,21 +24,10 @@ def train():
 
     #if model is not present, train the model
     if not os.path.exists(model_dir):
-        # model_name = "Salesforce/codet5-small"
-        model_name = "bigcode/starcoderbase-3b"
+        model_name = "Salesforce/codet5-small"
         cache_dir = os.path.join(back_dir, "cache_directory")
         tokenizer = AutoTokenizer.from_pretrained(model_name, cache_dir=cache_dir)
-        print(tokenizer.pad_token)
-        print(tokenizer.eos_token)  
-        if tokenizer.pad_token is None:
-            if tokenizer.eos_token is not None:
-                tokenizer.pad_token = tokenizer.eos_token
-            else:
-                tokenizer.add_special_tokens({'pad_token': '[PAD]'})
-                model.resize_token_embeddings(len(tokenizer))
-        set_tokenizer(tokenizer)
-        # model = AutoModelForSeq2SeqLM.from_pretrained(model_name, cache_dir=cache_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_name, cache_dir=cache_dir)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_name, cache_dir=cache_dir)
 
         # Load dataset
         json_dir = os.path.join(train_file_dir, "train.json")
@@ -49,9 +37,7 @@ def train():
     else:
         # Load the model and tokenizer
         tokenizer = AutoTokenizer.from_pretrained(model_dir)
-        set_tokenizer(tokenizer)
-        # model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
-        model = AutoModelForCausalLM.from_pretrained(model_dir)
+        model = AutoModelForSeq2SeqLM.from_pretrained(model_dir)
 
         # Load dataset
         json_dir = os.path.join(log_file_dir, "train.json")
@@ -75,7 +61,7 @@ def train():
     eval_dataset = Dataset.from_list(eval_data).map(preprocess_function, batched=True) 
 
     output_dir = os.path.join(back_dir, "models", "trained_model")
-    logging_dir = os.path.join(back_dir, "output", "model_logs")
+    logging_dir = os.path.join(back_dir, "model_logs")
 
     # Fine-tuning arguments
     training_args = TrainingArguments(
@@ -95,19 +81,14 @@ def train():
         report_to="none",
     )
 
-    data_collator = DataCollatorForLanguageModeling(
-        tokenizer=tokenizer, 
-        mlm=False,  # Set to True for masked language modeling (e.g., BERT), False for causal models
-    )
     # Trainer
     trainer = Trainer(
         model=model,
-        # tokenizer=tokenizer,
+        tokenizer=tokenizer,
         args=training_args,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
-        # data_collator= DataCollatorForSeq2Seq(tokenizer, model),
-        data_collator=data_collator,
+        data_collator= DataCollatorForSeq2Seq(tokenizer, model),
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
 

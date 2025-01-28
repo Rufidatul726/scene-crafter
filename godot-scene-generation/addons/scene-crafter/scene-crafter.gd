@@ -3,8 +3,8 @@ extends EditorPlugin
 
 const starting_gdscript: String = "the code should be in gdscript for godot game engine"
 const ending_gdscript: String= "you should complete the code. no extra conversation"
-const REQUEST_COOLDOWN: float = 180.0  # 3 minutes
-const FILE_REQUEST_COOLDOWN: float = 900.0  # 15 minutes
+const REQUEST_COOLDOWN: float = 30.0  # 3 minutes
+const FILE_REQUEST_COOLDOWN: float = 50.0  # 15 minutes
 
 var dock
 var scene_folder := "res://addons/scene-crafter/generated-scene"
@@ -30,19 +30,24 @@ var can_request: bool = true
 var file_request_tracker: Dictionary = {}  # Tracks last request times for individual files
 
 var flag=true
+var acceptKey: bool
+
+var code_editor: CodeEdit
+var prevCode
+var newCode
 
 func _enter_tree() -> void:
 	dock = preload("res://addons/scene-crafter/generate_scene.tscn").instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_UL, dock)
 	
-	#_start_polling_global_changes()
-	#connect_signals()
-	#
-	#cooldown_timer = Timer.new()
-	#cooldown_timer.wait_time = 180  # 3 minutes in seconds
-	#cooldown_timer.one_shot = true
-	#cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
-	#add_child(cooldown_timer)
+	_start_polling_global_changes()
+	connect_signals()
+	
+	cooldown_timer = Timer.new()
+	cooldown_timer.wait_time = 180  # 3 minutes in seconds
+	cooldown_timer.one_shot = true
+	cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
+	add_child(cooldown_timer)
 	
 	#http_request = HTTPRequest.new()
 	#add_child(http_request)
@@ -52,6 +57,7 @@ func _enter_tree() -> void:
 	#add_control_to_dock(EditorPlugin.DOCK_SLOT_RIGHT_BR, copilot)
 	#copilot.hide()
 	#start_monitoring()
+	
 
 func _exit_tree() -> void:
 	remove_control_from_docks(dock)
@@ -202,6 +208,8 @@ func _send_http_request(file_path: String):
 			"Authorization": "Bearer YOUR_ACCESS_TOKEN" # Replace 'YOUR_ACCESS_TOKEN' with your actual token
 		}
 		
+		http_request= HTTPRequest.new()
+		add_child(http_request)
 		http_request.connect("request_completed", Callable(self, "_on_request_completed"))
 
 		http_request.request(
@@ -256,7 +264,8 @@ func _on_request_completed(result: int, response_code: int, headers: Array, body
 						# Write the code to the last opened file
 						print(last_opened_file)
 						if last_opened_file != "":
-							_replace_file_content(last_opened_file, script_code)
+							#_replace_file_content(last_opened_file, script_code)
+							_insert_code_suggestion(last_opened_file, script_code)
 					else:
 						print("No file is currently open to replace content.")
 				else:
@@ -270,22 +279,98 @@ func _on_request_completed(result: int, response_code: int, headers: Array, body
 	else:
 		print("Request failed with code %s: %s" % [response_code, response])
 
+# Highlight Differences Between Old and New Code
+func highlight_suggestions(old_code: String, suggested_code: String) -> String:
+	var old_lines = old_code.split("\n")
+	var new_lines = suggested_code.split("\n")
+	var highlighted_text = ""
 
+	# Compare old and new lines
+	for i in range(max(old_lines.size(), new_lines.size())):
+		if i < old_lines.size() and i < new_lines.size():
+			# Check if lines are the same
+			if old_lines[i] == new_lines[i]:
+				highlighted_text += old_lines[i]
+			else:
+				highlighted_text += old_lines[i]  # Old line in red
+				highlighted_text += new_lines[i]  # Suggested line in green
+		elif i < old_lines.size():
+			# Remaining lines in old code
+			highlighted_text += old_lines[i] 
+		elif i < new_lines.size():
+			# Remaining lines in new code
+			highlighted_text +=  new_lines[i] 
+
+	return highlighted_text
+	
 func _replace_file_content(file_path: String, new_content: String) -> void:
 	var file := FileAccess.open(file_path, FileAccess.WRITE)
 	if file:
 		file.store_string(new_content)
 		file.close()
 		print("File content replaced successfully: %s" % file_path)
-		print("File has been updated. Reloading in the editor...")
-
-		# Trigger the refresh in the editor
-		EditorInterface.reload_scene_from_path(last_opened_file)
-		#EditorInterface.open_scene_from_path(last_opened_file)
 	else:
 		print("Failed to open file '%s' for writing. Error code: %s" % [file_path, file])
 
+func _insert_code_suggestion(file_path: String, suggested_code: String) -> void:
+	var editor_script = EditorInterface.get_script_editor().get_current_editor().get_base_editor()
+	if not editor_script:
+		print("No active editor found.")
+		return
 
+	# Get current caret position (where the suggestion should appear)
+	var caret_pos = editor_script.get_caret_line()
+	var caret_index= editor_script.get_caret_index_edit_order()
+	var code = editor_script.get_text_for_code_completion()
+
+	# Create a comment block around the suggested code for easy identification
+	var comment_block = "\n# Suggested Code: (Review and accept)\n# ==========================\n"
+	comment_block += suggested_code + "\n# ==========================\n"
+
+	# Insert the suggestion in the code (after the caret position)
+	var new_code = code.substr(0, caret_pos) + comment_block + code.substr(caret_pos, code.length())
+	#var output= code.insert(caret_pos, code)
+	#print("code not worked")
+	#print(output)
+	
+	editor_script.set_code_hint(new_code)
+	#editor_script.set_caret_line(caret_pos + 1)
+	#editor_script.set_caret_line(caret_pos + comment_block.length())  # Move the caret after the suggestion
+
+	if(Input.is_key_label_pressed(KEY_CTRL)):
+		print("key pressed...")
+		editor_script.set_code_hint_draw_below(true)
+		print("drew")
+		
+	print("Code suggestion inserted at the caret position.")
+	prevCode= code
+	newCode= highlight_suggestions(code, suggested_code)
+	
+	code_editor= CodeEdit.new()
+	code_editor.code_completion_enabled= true
+	code_editor.connect("code_completion_requested", Callable(self, "_request_code_completion"))
+	print("code_editor not worked")
+	
+	editor_script.set_line(caret_pos, newCode)
+	print("set line not worked")
+	
+	#code_editor.code_completion_requested.connect(_request_code_completion)
+	
+func _request_code_completion(force):
+	print(force)
+	print(CodeEdit.KIND_FUNCTION)
+	code_editor.add_code_completion_option(CodeEdit.KIND_FUNCTION, prevCode, newCode, highlight_color)
+	code_editor.update_code_completion_options(force)
+	
+#func _input(event):
+	#print(event.as_text())
+	
+func get_code_editor():
+	var script_editor = EditorInterface.get_script_editor()
+	if script_editor:
+		return script_editor.get_current_editor().get_base_editor()
+	return null
+	
 # Get the currently opened script or file
 func _get_opened_file() -> String:
 	var script_editor = EditorInterface.get_script_editor()

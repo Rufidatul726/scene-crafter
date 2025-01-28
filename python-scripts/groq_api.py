@@ -58,11 +58,11 @@ async def generate_recommendation(messages: Request):
         response += chunk.choices[0].delta.content or ""
     return {"response": response}
 
-@app.post("/generate")
+@app.post("/generate_scene/")
 async def generate_response(request: Request):
     try:
         input_data = await request.json()
-        user_input = input_data.get("input")
+        user_input = input_data.get("prompt")
         if not user_input:
             return Response(content="Input text missing", status_code=status.HTTP_400_BAD_REQUEST)
         
@@ -81,7 +81,19 @@ async def generate_response(request: Request):
         for chunk in completion:
             print(chunk.choices[0].delta.content)
             response += chunk.choices[0].delta.content or ""
-        return {"response": response}
+        
+        filename = f"generated_scene_{hash(user_input)}.tscn"
+        base_dir = os.path.dirname(os.path.abspath(__file__))  # Get the directory of app.py
+        one_level_back = os.path.normpath(base_dir + os.sep + os.pardir)
+        output_dir = os.path.join(one_level_back, "godot-scene-generation","scene-crafter-generated-scene")
+        os.makedirs(output_dir, exist_ok=True)
+        print(output_dir)
+        file_path = os.path.join(output_dir, filename)
+        with open(file_path, "w") as f:
+            f.write(response)
+
+
+        return {"message": "Scene generated successfully", "file": file_path}
     except Exception as e:
         print(e)
         return {"response": str(e)}

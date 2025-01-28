@@ -35,14 +35,14 @@ func _enter_tree() -> void:
 	dock = preload("res://addons/scene-crafter/generate_scene.tscn").instantiate()
 	add_control_to_dock(EditorPlugin.DOCK_SLOT_LEFT_UL, dock)
 	
-	_start_polling_global_changes()
-	connect_signals()
-	
-	cooldown_timer = Timer.new()
-	cooldown_timer.wait_time = 180  # 3 minutes in seconds
-	cooldown_timer.one_shot = true
-	cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
-	add_child(cooldown_timer)
+	#_start_polling_global_changes()
+	#connect_signals()
+	#
+	#cooldown_timer = Timer.new()
+	#cooldown_timer.wait_time = 180  # 3 minutes in seconds
+	#cooldown_timer.one_shot = true
+	#cooldown_timer.connect("timeout", Callable(self, "_on_cooldown_finished"))
+	#add_child(cooldown_timer)
 	
 	#http_request = HTTPRequest.new()
 	#add_child(http_request)

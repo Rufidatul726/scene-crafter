@@ -2,6 +2,8 @@ import json
 import os
 import re
 
+from utils.tokenizer import get_tokenizer
+
 def standardize_prompt(prompt):
     """
     Standardize the input prompt by normalizing spacing and casing.
@@ -60,7 +62,7 @@ def preprocess_data(train_file_dir, data):
     return processed_data
 
 # Preprocess function for structured tokens for training and evaluation
-def preprocess_function(entry, tokenizer):
+def preprocess_function(entry):
     """
     Custom preprocessing for structured `.tscn` scene files and natural language prompts.
 
@@ -71,6 +73,7 @@ def preprocess_function(entry, tokenizer):
         dict: Tokenized prompt and output with special formatting for structured tokens.
     """
     # Tokenize prompt and the expected scene format
+    tokenizer = get_tokenizer()
     input_encodings = tokenizer(entry["prompt"], truncation=True, padding="max_length", max_length=512)
     output_encodings = tokenizer(entry["output"], truncation=True, padding="max_length", max_length=512)
 

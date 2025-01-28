@@ -1,6 +1,7 @@
 extends Button
 
-func _on_pressed():
+func _on_train_button_pressed():
+	print("Starting Training...")
 	var url = "http://localhost:8000/train_model/"
 	_start_training(url)
 

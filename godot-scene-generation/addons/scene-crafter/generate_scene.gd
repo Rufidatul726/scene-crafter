@@ -3,10 +3,17 @@ extends Control
 
 @onready var input= $VBoxContainer/HBoxContainer/TextEdit
 @onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
+@onready var trainButton = $VBoxContainer/MainMenu/HBoxContainer/train
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	sendButton.connect("pressed", Callable(self, "_on_SubmitButton_pressed"))
+	
+	trainButton.connect("pressed", Callable( self, "_on_train_pressed"))
+
+func _on_train_pressed() -> void:
+	var trainScript= preload("res://addons/scene-crafter/train.gd").new()
+	trainScript._on_train_button_pressed()
 
 func _on_send_button_pressed() -> void:
 	var text_input = input.text 

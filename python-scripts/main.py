@@ -31,8 +31,8 @@ If the user is asking for a code snippet, you should provide a code snippet.
 If the user is asking for a code explanation, you should provide an explanation of the code.
 """
 
-MAX_LENGTH = 8500
-MAX_TOKENS = 2048
+MAX_LENGTH = 2000
+MAX_TOKENS = 1048
 
 @app.post("/generate_scene/")
 async def generate(request: Request):

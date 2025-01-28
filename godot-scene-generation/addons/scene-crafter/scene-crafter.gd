@@ -206,9 +206,7 @@ func _send_http_request(file_path: String):
 
 		http_request.request(
 			"http://localhost:8001/recommend/",
-			#"https://api-inference.huggingface.co/models/bigcode/starcoder",
 			["Content-Type: application/json"],
-			#["Authorization: Bearer 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"],  # Headers
 			HTTPClient.METHOD_POST,
 			json_body
 		)

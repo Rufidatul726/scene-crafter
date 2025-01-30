@@ -1,7 +1,23 @@
-[gd_scene load_steps=3 format=3 uid="uid://dooo1jqbn60wg"]
+[gd_scene load_steps=5 format=3 uid="uid://dooo1jqbn60wg"]
 
 [ext_resource type="Script" path="res://addons/scene-crafter/generate_scene.gd" id="1_4y01a"]
 [ext_resource type="Script" path="res://addons/scene-crafter/train.gd" id="2_2iudt"]
+
+[sub_resource type="SystemFont" id="SystemFont_qxcbv"]
+font_names = PackedStringArray("Century")
+font_weight = 700
+font_stretch = 150
+force_autohinter = true
+hinting = 2
+subpixel_positioning = 0
+
+[sub_resource type="LabelSettings" id="LabelSettings_tqaft"]
+font = SubResource("SystemFont_qxcbv")
+font_size = 24
+font_color = Color(0.160436, 0.000312441, 0.377321, 1)
+outline_size = 1
+outline_color = Color(0.470588, 0, 1, 0.313726)
+shadow_size = 3
 
 [node name="generate-scene" type="Control"]
 layout_mode = 3
@@ -21,39 +37,56 @@ offset_bottom = -0.22998
 
 [node name="MainMenu" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
+size_flags_vertical = 3
+size_flags_stretch_ratio = 0.09
 
-[node name="title" type="Label" parent="VBoxContainer/MainMenu"]
+[node name="Panel" type="Panel" parent="VBoxContainer/MainMenu"]
+layout_direction = 1
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 25
-text = "Scene Crafter"
-horizontal_alignment = 1
-vertical_alignment = 1
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer/MainMenu"]
+[node name="title" type="Label" parent="VBoxContainer/MainMenu/Panel"]
 layout_mode = 2
+offset_left = 4.0
+offset_top = -1.0
+offset_right = 1044.0
+offset_bottom = 65.0
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 25
+text = " Scene Crafter"
+label_settings = SubResource("LabelSettings_tqaft")
+vertical_alignment = 1
+uppercase = true
 
-[node name="train" type="Button" parent="VBoxContainer/MainMenu/HBoxContainer"]
+[node name="train" type="Button" parent="VBoxContainer/MainMenu"]
 layout_mode = 2
 text = "Train Model"
 script = ExtResource("2_2iudt")
 
 [node name="RichTextLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_direction = 1
 layout_mode = 2
 size_flags_vertical = 3
+size_flags_stretch_ratio = 0.7
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
-size_flags_stretch_ratio = 0.14
+size_flags_stretch_ratio = 0.5
 
 [node name="TextEdit" type="TextEdit" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+size_flags_stretch_ratio = 10.39
 placeholder_text = "Ask Anything...."
+scroll_smooth = true
+scroll_past_end_of_file = true
+scroll_fit_content_height = true
 
 [node name="SendButton" type="Button" parent="VBoxContainer/HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
+size_flags_stretch_ratio = 1.21
 text = "Send"
 
 [connection signal="pressed" from="VBoxContainer/HBoxContainer/SendButton" to="." method="_on_send_button_pressed"]

@@ -34,9 +34,6 @@ func _process(delta):
     
 ```
 If the user is asking for correcting an error, you should provide the corrected code in that godot {version}.
-If the user is asking for a tutorial, you should provide a step-by-step guide.
-If the user is asking for a code snippet, you should provide a code snippet.
-If the user is asking for a code explanation, you should provide an explanation of the code.
 """
 
 @app.post("/recommend/")

@@ -3,7 +3,7 @@ extends Control
 
 @onready var input= $VBoxContainer/HBoxContainer/TextEdit
 @onready var sendButton= $VBoxContainer/HBoxContainer/SendButton
-@onready var trainButton = $VBoxContainer/MainMenu/HBoxContainer/train
+@onready var trainButton = $VBoxContainer/MainMenu/train
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -18,12 +18,12 @@ func _on_train_pressed() -> void:
 func _on_send_button_pressed() -> void:
 	var text_input = input.text 
 	print("User input:", text_input)
-	print(OS.get_executable_path().get_base_dir())
 	var version_info = Engine.get_version_info() 
 	print("Godot Version: %s.%s.%s" % [version_info["major"], version_info["minor"], version_info["patch"]])
 	
 	var json_data = {
 		"prompt": text_input,
+		"path": ProjectSettings.globalize_path("res://"), 
 		"version": version_info["major"]
 	}
 	

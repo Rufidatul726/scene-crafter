@@ -1,3 +1,66 @@
+import re
+
+def remove_duplicate_properties_from_nodes(scene_content):
+    """Remove duplicate properties from the same nodes."""
+    scene_lines = scene_content.splitlines()
+    cleaned_lines = []
+    node_properties = {}  # Store node properties as a dictionary
+
+    current_node = None
+    node_property_lines = []
+
+    for line in scene_lines:
+        # Detect the node line with node name
+        if 'node name' in line:
+            # If we've reached a new node and it had properties stored, we add them first
+            if current_node is not None and node_property_lines:
+                # Remove duplicate properties for the current node
+                unique_properties = {}
+                for prop_line in node_property_lines:
+                    match = re.match(r'(\S+) = (.+)', prop_line)
+                    if match:
+                        key, value = match.groups()
+                        if key not in unique_properties:
+                            unique_properties[key] = value
+
+                # Rebuild the lines with unique properties for this node
+                for key, value in unique_properties.items():
+                    cleaned_lines.append(f"{key} = {value}")
+            
+            # Start a new node
+            current_node = line
+            node_property_lines = [line]  # Include the node line itself
+
+        # Collect property lines for the current node
+        elif current_node and line.strip() != '' and re.match(r'(\S+) = (.+)', line.strip()):
+            node_property_lines.append(line)
+
+        else:
+            # For all other lines (non-node lines, blank lines), simply append to the result
+            if current_node:
+                cleaned_lines.append(current_node)
+                current_node = None
+
+            cleaned_lines.append(line)
+    
+    # Handle the last node's properties, if any
+    if current_node is not None and node_property_lines:
+        unique_properties = {}
+        for prop_line in node_property_lines:
+            match = re.match(r'(\S+) = (.+)', prop_line)
+            if match:
+                key, value = match.groups()
+                if key not in unique_properties:
+                    unique_properties[key] = value
+
+        # Rebuild the lines with unique properties for this node
+        for key, value in unique_properties.items():
+            cleaned_lines.append(f"{key} = {value}")
+
+    # Reassemble the scene content without duplicate properties for the nodes
+    cleaned_scene = "\n".join(cleaned_lines)
+    return cleaned_scene
+
 def remove_duplicate_lines_from_scene(scene_content):
     """Remove duplicate nodes from the scene content."""
     seen_nodes = set()  # Set to keep track of nodes we've already seen

@@ -29,7 +29,7 @@ def main():
 
     # Step 3: Handle cache directory
     project_dir = os.getcwd()  # Update this if needed
-    cache_dir = os.path.join(project_dir, "cache_directory")
+    cache_dir = os.path.join(project_dir, "backend", "cache_directory")
     if not os.path.exists(cache_dir):
         os.makedirs(cache_dir)
         print("Cache directory created.")

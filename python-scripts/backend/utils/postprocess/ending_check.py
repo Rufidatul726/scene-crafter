@@ -31,6 +31,12 @@ def ensure_nodes_end_with_newline(scene_content):
         if '=' in line and len(line.split('=', 1)[1].strip()) == 0:
             continue  # Skip lines where '=' has no right side value
 
+        if '.' in line and len(line.split('=', 1)[1].strip()) == 0:
+            continue  # Skip lines where '=' has no right side value
+
+        if ':' in line and len(line.split('=', 1)[1].strip()) == 0:
+            continue  # Skip lines where '=' has no right side value
+
         # If the line passed all checks, it's valid, so we keep it
         cleaned_lines.append(line)
     

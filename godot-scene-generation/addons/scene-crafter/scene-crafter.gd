@@ -280,7 +280,7 @@ func _on_request_completed(result: int, response_code: int, headers: Array, body
 		print("Request failed with code %s: %s" % [response_code, response])
 
 # Highlight Differences Between Old and New Code
-func highlight_suggestions(old_code: String, suggested_code: String) -> String:
+func highlight_suggestions(old_code: String, suggested_code: String, editor_script) -> String:
 	var old_lines = old_code.split("\n")
 	var new_lines = suggested_code.split("\n")
 	var highlighted_text = ""
@@ -293,12 +293,14 @@ func highlight_suggestions(old_code: String, suggested_code: String) -> String:
 				highlighted_text += old_lines[i]
 			else:
 				highlighted_text += old_lines[i]  # Old line in red
+				editor_script.set_line_background_color(editor_script.get_caret_line(), Color.DARK_GRAY)
 				highlighted_text += new_lines[i]  # Suggested line in green
 		elif i < old_lines.size():
 			# Remaining lines in old code
 			highlighted_text += old_lines[i] 
 		elif i < new_lines.size():
 			# Remaining lines in new code
+			editor_script.set_line_background_color(editor_script.get_caret_line(), Color.DARK_GRAY)
 			highlighted_text +=  new_lines[i] 
 
 	return highlighted_text
@@ -322,37 +324,27 @@ func _insert_code_suggestion(file_path: String, suggested_code: String) -> void:
 	var caret_pos = editor_script.get_caret_line()
 	var caret_index= editor_script.get_caret_index_edit_order()
 	var code = editor_script.get_text_for_code_completion()
-
-	# Create a comment block around the suggested code for easy identification
-	var comment_block = "\n# Suggested Code: (Review and accept)\n# ==========================\n"
-	comment_block += suggested_code + "\n# ==========================\n"
-
-	# Insert the suggestion in the code (after the caret position)
-	var new_code = code.substr(0, caret_pos) + comment_block + code.substr(caret_pos, code.length())
-	#var output= code.insert(caret_pos, code)
-	#print("code not worked")
-	#print(output)
 	
-	editor_script.set_code_hint(new_code)
-	#editor_script.set_caret_line(caret_pos + 1)
+	editor_script.set_code_hint(suggested_code)
+	editor_script.set_caret_line(0)
 	#editor_script.set_caret_line(caret_pos + comment_block.length())  # Move the caret after the suggestion
-
-	if(Input.is_key_label_pressed(KEY_CTRL)):
+	
+	var ketacpt= InputEventKey.new()
+	if ketacpt.pressed==true and ketacpt.keycode==4194326:
 		print("key pressed...")
 		editor_script.set_code_hint_draw_below(true)
 		print("drew")
-		
+
+	editor_script.set_line(caret_pos, newCode, code_editor)
+	print("set line not worked")
 	print("Code suggestion inserted at the caret position.")
 	prevCode= code
-	newCode= highlight_suggestions(code, suggested_code)
+	newCode= highlight_suggestions(code, suggested_code, editor_script)
 	
 	code_editor= CodeEdit.new()
 	code_editor.code_completion_enabled= true
 	code_editor.connect("code_completion_requested", Callable(self, "_request_code_completion"))
 	print("code_editor not worked")
-	
-	editor_script.set_line(caret_pos, newCode)
-	print("set line not worked")
 	
 	#code_editor.code_completion_requested.connect(_request_code_completion)
 	
@@ -361,10 +353,7 @@ func _request_code_completion(force):
 	print(CodeEdit.KIND_FUNCTION)
 	code_editor.add_code_completion_option(CodeEdit.KIND_FUNCTION, prevCode, newCode, highlight_color)
 	code_editor.update_code_completion_options(force)
-	
-#func _input(event):
-	#print(event.as_text())
-	
+		
 func get_code_editor():
 	var script_editor = EditorInterface.get_script_editor()
 	if script_editor:

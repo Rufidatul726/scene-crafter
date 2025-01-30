@@ -1,0 +1,30 @@
+[node  type="CollisionShape" name="SphereCollision" parent="SpherePhysics"]
+
+shape = SubResource(8)
+transform = Transform( 1.0 , 0.0 , -0.0 , 0.0 , -4.371138828673793e-08 , 1.0 , -0.0 , -1.0 , -4.371138828673793e-08 ,0.0 ,0.0 ,-0.0  )
+
+
+[node  type="MeshInstance" name="Sphere" parent="SpherePhysics"]
+
+mesh = SubResource(9)
+transform = Transform( 1.0 , 0.0 , -0.0 , 0.0 , 1.0 , -0.0 , -0.0 , -0.0 , 1.0 ,0.0 ,0.0 ,-0.0  )
+
+
+[node  type="OmniLight" name="Lamp" parent="."]
+
+light_energy = 1.0
+light_specular = 1.0
+transform = Transform( -0.29086464643478394 , -0.7711008191108704 , 0.5663931369781494 , -0.05518905818462372 , 0.6045246720314026 , 0.7946722507476807 , -0.9551711678504944 , 0.199883371591568 , -0.21839118003845215 ,4.076245307922363 ,7.3235554695129395 ,-1.0054539442062378  )
+omni_range = 30
+shadow_enabled = true
+light_negative = false
+light_color = Color( 1.0, 1.0, 1.0, 1.0 )
+
+
+[node  type="Camera" name="Camera" parent="."]
+
+projection = 0
+near = 0.10000000149011612
+fov = 50
+transform = Transform( 0.6859206557273865 , -0.32401350140571594 , 0.6515582203865051 , 0.0 , 0.8953956365585327 , 0.44527143239974976 , -0.7276763319969177 , -0.3054208755493164 , 0.6141703724861145 ,14.430776596069336 ,10.093015670776367 ,13.058500289916992  )
+far = 100.0

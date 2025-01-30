@@ -1,0 +1,22 @@
+[gd_resource type="ArrayMesh" load_steps=2 format=3 uid="uid://dww8o7hsqrhx5"]
+
+[ext_resource type="Material" path="res://player/model/playerobot.tres" id="1_r3bjq"]
+
+[resource]
+resource_name = "player_Sphere_016"
+_surfaces = [{
+"aabb": AABB(-0.207928, 1.21409, -0.14545, 0.415856, 0.226569, 0.223374),
+"attribute_data": PackedByteArray(63, 121, ..., 117, 63),
+"bone_aabbs": [AABB(0, 0, 0, -1, -1, -1), ..., AABB(-0.207928, 1.21409, -0.14545, 0.134291, 0.226569, 0.223374)],
+"format": 7191,
+"index_count": 1224,
+"index_data": PackedByteArray(30, 0, ..., 150, 4),
+"lods": [0.0382013, PackedByteArray(33, 1, ..., 150, 4)],
+"material": ExtResource("1_r3bjq"),
+"name": "playerobot",
+"primitive": 3,
+"skin_data": PackedByteArray(15, 0, ..., 0, 0),
+"vertex_count": 1250,
+"vertex_data": PackedByteArray(196, 169, ..., 11, 38)
+}]
+blend_shape_mode = 0

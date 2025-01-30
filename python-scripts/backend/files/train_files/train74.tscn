@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://da4tdwegx2rfh"]
+
+[ext_resource type="Texture2D" uid="uid://cjfuvh4fgomyu" path="res://assets/star-pixel-art-free-vector.jpg" id="1_nkyml"]
+[ext_resource type="Texture2D" uid="uid://bm7d43gg3mm7x" path="res://assets/Moon2_Sprite.png" id="2_8ml0c"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="StarSprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_nkyml")
+
+[node name="MoonSprite" type="Sprite2D" parent="."]
+texture = ExtResource("2_8ml0c")

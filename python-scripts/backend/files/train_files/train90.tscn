@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://c2feqlsbkaee"]
+
+[node name="TabContainer" type="TabContainer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+current_tab = 0
+
+[node name="Inventory" type="TabBar" parent="."]
+layout_mode = 2
+tab_count = 1
+tab_0/title = "Inventory"
+metadata/_tab_index = 0
+
+[node name="Setting" type="TabBar" parent="."]
+visible = false
+layout_mode = 2
+tab_count = 1
+tab_0/title = "Setting"
+metadata/_tab_index = 1

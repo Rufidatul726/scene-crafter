@@ -1,0 +1,2 @@
+[node name="Cube" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 2, 3)

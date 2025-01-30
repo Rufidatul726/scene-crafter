@@ -1,0 +1,7 @@
+[gd_scene load_steps=1 format=3 uid="uid://pqrs6743"]
+
+[node name="GameOver" type="Control"]
+[node name="RestartButton" type="Button" parent="GameOver"]
+text = "Restart"
+[node name="QuitButton" type="Button" parent="GameOver"]
+text = "Quit"

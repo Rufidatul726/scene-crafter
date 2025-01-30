@@ -1,0 +1,2 @@
+[node name="mesh" type="MeshInstance3D" parent="Armature01"]
+skeleton = NodePath("..")

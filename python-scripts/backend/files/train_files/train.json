@@ -1,0 +1,326 @@
+[
+    {
+        "prompt": "Node3D",
+        "output": "train1.tscn"
+    },
+    {
+        "prompt": "a scene containing a RigidBody3D-based ball with collision, visuals (mesh + light) and a camera parented to the RigidBody3D",
+        "output": "train2.tscn"
+    },
+    {
+        "prompt": "the skeleton property in the MeshInstance3D node called mesh points to its parent, Armature01",
+        "output": "train3.tscn"
+    },
+    {
+        "prompt": "a skeleton node with two bones",
+        "output": "train4.tscn"
+    },
+    {
+        "prompt": "a Marker3D node parented to a bone in Skeleton",
+        "output": "train5.tscn"
+    },
+    {
+        "prompt": "external resources",
+        "output": "train6.tscn"
+    },
+    {
+        "prompt": "a capsule collision shape",
+        "output": "train7.tscn"
+    },
+    {
+        "prompt": "an ArrayMesh saved to its own .tres file. Some fields were shortened with ... for brevity",
+        "output": "train8.tscn"
+    },
+    {
+        "prompt": "a scene containing an AnimationPlayer that scales down a cube over time using a generic property track. The AnimationLibrary workflow was not used, so the animation library has an empty name (but the animation is still given a scale_down name). Note that the RESET track was not created in this AnimationPlayer for brevity",
+        "output": "train9.tscn"
+    },
+    {
+        "prompt": "Animation resource that makes use of the 3D Position and 3D Rotation tracks. These tracks (in addition to the 3D Scale track) replace Transform tracks from Godot 3. They are optimized for fast playback and can optionally be compressed. The downside of these optimized track types is that they can't use custom easing values. Instead, all keyframes use linear interpolation. That said, you can still opt for using nearest or cubic interpolation for all keyframes in a given track by changing the track's interpolation mode.",
+        "output": "train10.tscn"
+    },
+    {
+        "prompt": "nodes like Collission, Camera, meshinstance, omnilight etc...",
+        "output": "train11.tscn"
+    },
+    {
+        "prompt": "AnimationPlayer works as an animation lib. it has animations listed in the format anim/Name=SubResource(ResourceId), each refers to a Animation internal resource. All the animation resources use the root node of AnimationPlayer. The root node is stored as root_node=NodePath(Path/To/Node)",
+        "output": "train12.tscn"
+    },
+    {
+        "prompt": "ArrayMesh",
+        "output": "train13.tscn"
+    },
+    {
+        "prompt": "Create a player character scene with a sprite and collision",
+        "output": "train14.tscn"
+    },
+    {
+        "prompt": "Create a main menu with a Play button and an Exit button.",
+        "output": "train15.tscn"
+    },
+    {
+        "prompt": "Build a 2D environment with background and floor tiles.",
+        "output": "train16.tscn"
+    },
+    {
+        "prompt": "Create a chat scene with a title, a message box, and a send button.",
+        "output": "train17.tscn"
+    },
+    {
+        "prompt": "Create a game-over screen with Restart and Quit buttons.",
+        "output": "train18.tscn"
+    },
+    {
+        "prompt": "Create a menu with a main menu button, confirm quit button and an graph button.",
+        "output": "train19.tscn"
+    },
+    {
+        "prompt": "shot",
+        "output": "train20.tscn"
+    },
+    {
+        "prompt": "confirm quit",
+        "output": "train21.tscn"
+    },
+    {
+        "prompt": "Create a graph scene with graph Node.",
+        "output": "train22.tscn"
+    },
+    {
+        "prompt": "Create a scene with node and AnimationPlayer and UniqueNames node as a child and A and children.",
+        "output": "train23.tscn"
+    },
+    {
+        "prompt": "Create a scene with a KinematicBody2D root named MovingPlatform, a hidden CollisionShape2D with a RectangleShape2D sub-resource, a one-shot Timer, and a signal connecting the Timer's timeout to the root's _on_Timer_timeout method.",
+        "output": "train24.tscn"
+    },
+    {
+        "prompt": "Create a .tscn scene with a Game root node containing instances of Waypoints and MovingPlatform PackedScenes, positioned appropriately, and child nodes Start, 1, 2, 3 under Waypoints with defined positions and properties.",
+        "output": "train25.tscn"
+    },
+    {
+        "prompt": "with Node2D root and a child Sprite named icon, positioned at (280, 299), using an icon.png texture and a ShaderMaterial with a gradient texture and a mix effect applied",
+        "output": "train26.tscn"
+    },
+    {
+        "prompt": "area 2d with player coin sign spiketrap colorSquare sprites",
+        "output": "train27.tscn"
+    },
+    {
+        "prompt": "coin sprite",
+        "output": "train28.tscn"
+    },
+    {
+        "prompt": "Create a scene with a CharacterBody2D root named Player containing: a CollisionShape2D at (0, 48) using a RectangleShape2D, a scaled Sprite2D named PlayerSprite, an Area2D named HurtBox with its own CollisionShape2D using another RectangleShape2D, and a hidden Sprite2D named ContextClueSprite positioned at (0, -92) with scaling applied./ player with animation",
+        "output": "train29.tscn"
+    },
+    {
+        "prompt": "Create a scene with a StaticBody2D root named Sign, including: a CollisionShape2D at (0, 24) with a RectangleShape2D, a scaled Sprite child, and an Area2D child with its own CollisionShape2D at (0, 64) using another RectangleShape2D / sign2d",
+        "output": "train30.tscn"
+    },
+    {
+        "prompt": "Create a scene with an Area2D root named SpikeTrap that includes a CollisionShape2D with a RectangleShape2D, and a scaled Sprite using the texture Spike trap.png",
+        "output": "train31.tscn"
+    },
+    {
+        "prompt": "Area2D root named ColorSquare using a script, two colors (color_one and color_two), a CollisionShape2D with a RectangleShape2D, and a scaled Sprite with the color_block.png texture. Connect mouse_entered and mouse_exited signals to corresponding methods on the root.",
+        "output": "train32.tscn"
+    },
+    {
+        "prompt": "an Area2D root named Hitbox, set to collision layer 4, and a CollisionShape2D child positioned at (0, -45) with a RectangleShape2D shape / Hitbox2d",
+        "output": "train33.tscn"
+    },
+    {
+        "prompt": "a StaticBody2D root named Barricade, set to collision layer 8 and mask 15, including a scaled Sprite with the barricade.png texture and a CollisionShape2D with a RectangleShape2D shape / barricade2d",
+        "output": "train34.tscn"
+    },
+    {
+        "prompt": "a scene with a StaticBody2D root named Target, set to collision layer 8, containing: a scaled Sprite using the target.png texture, a CollisionShape2D at (0, 32) with a RectangleShape2D, and an Area2D named Hitbox (collision layer 2) with its own CollisionShape2D at (0, -20) using another RectangleShape2D / target2d",
+        "output": "train35.tscn"
+    },
+    {
+        "prompt": "a scene with an Area2D root named TurretShot, set to collision layer 4 and mask 11, containing: a scaled Sprite, a CollisionShape2D using a CapsuleShape2D, and a VisibilityNotifier2D with a RectangleShape2D shape / turretshot2d",
+        "output": "train36.tscn"
+    },
+    {
+        "prompt": "a StaticBody2D root named Turret, set to collision layer 4, containing: a Sprite with the turret.png texture positioned at (0, -48), a CollisionShape2D at (0, -12) with a RectangleShape2D, a Hitbox instance from a PackedScene, and a ShotTimer set to wait 0.1 seconds with one_shot enabled, connected to the _on_ShotTimer_timeout method / turret2d",
+        "output": "train37.tscn"
+    },
+    {
+        "prompt": "a game character node setup, with sprites for visual representation, particles for effects, an HP bar for health management, and animations for actions and reactions",
+        "output": "train38.tscn"
+    },
+    {
+        "prompt": "references to themes, styles, scripts, textures, and layout structures for a game interface. This layout is likely for a game or application involving player representations, attributes, attack statuses, and damage statuses, with a focus on UI elements such as panels, labels, and progress bars.",
+        "output": "train39.tscn"
+    },
+    {
+        "prompt": "for a modular setup, this scene has several resources, including: Signals.gd script, which seems to handle signals. PlayerUI.tscn, Player.tscn, Dummy.tscn, and Panel.tscn as separate scene resources, which likely represent different UI panels, player, and dummy characters, each structured independently for reusability. This file is linking to other packed scenes and adding them into the current scene / modular setup",
+        "output": "train40.tscn"
+    },
+    {
+        "prompt": "a character with animations (setup, idle, walk), a collision shape, and a shadow, using textures for the body and shadow, including keyframes for modulating the body and positioning during idle and walking states",
+        "output": "train41.tscn"
+    },
+    {
+        "prompt": "a KinematicBody2D node named Bat, positioned at specific coordinates, using a custom script for behavior and a sprite with a bat texture applied",
+        "output": "train43.tscn"
+    },
+    {
+        "prompt": "two NPC instances (Npc and Npc2) positioned at specific coordinates, each with assigned patrol vectors for movement",
+        "output": "train42.tscn"
+    },
+    {
+        "prompt": "a Node named Outdoor containing three sprite elements (dirt, grass, and rock), each using different regions of a texture, and a static body for the rock with a collision polygon",
+        "output": "train44.tscn"
+    },
+    {
+        "prompt": "setup for a scene with: A GridLines TileMap node that uses a grid tileset, placed at the top and with some parameters for rendering the grid. A TileMap node with another tile set used for a level, scripted to utilize pathfinding. A Character node (Position2D) representing the character, attached with a sprite, and a script defining movement speed (SPEED = 200.0). It seems set up for a tile-based world with pathfinding and player interaction.",
+        "output": "train45.tscn"
+    },
+    {
+        "prompt": "a VBoxContainer inside a CenterContainer, displaying a TOUCHES label and a numeric value (999) as a Label with custom fonts for each. Attach the game logic via a script to manage interaction and UI",
+        "output": "train46.tscn"
+    },
+    {
+        "prompt": "node for handling state or sequence management / state machine",
+        "output": "train47.tscn"
+    },
+    {
+        "prompt": "Generate a scene for a character with health, animation, and particle effects, using sprites, a particle system for healing, and collision, involving animations like SETUP and heal with visual effects/ character with health",
+        "output": "train48.tscn"
+    },
+    {
+        "prompt": "Create a scene for a 'CoinsCollector' with an Area2D node that handles collision detection, gravity, and damping. Include a custom CircleShape2D with a specified radius for collision and link the area_entered signal to the method _on_area_entered. Ensure the node has specific properties set for input pickability, gravity, collision layers, and audio bus/ coins collector",
+        "output": "train49.tscn"
+    },
+    {
+        "prompt": "Create a Godot scene for a 'CoinsFountain' with a Position2D node containing a Timer node that manages the spawn intervals for coins. The timer should have properties such as MINIMUM_WAIT_TIME, MAXIMUM_WAIT_TIME, and an auto-start feature disabled. Implement a randomize_wait_time method to adjust the wait time between spawns. Ensure that the timer emits a timeout signal that triggers a method for coin spawning and randomizes the next wait time / coins fountain",
+        "output": "train50.tscn"
+    },
+    {
+        "prompt": "a 'DamageSource' Area2D node. The node should have the properties input_pickable, gravity_vec, gravity, linear_damp, angular_damp, and audio_bus_override. Set monitoring to false, collision_layer to 32, and collision_mask to 4. Attach a script with damage set to 2 / damage source",
+        "output": "train51.tscn"
+    },
+    {
+        "prompt": "Create a Godot scene for a sword Area2D node, including multiple animations for actions like 'SETUP', 'attack_circular', 'attack_fast', 'attack_medium', and 'idle'. Attach a script from 'Sword.gd'. Set various attributes like input_pickable, gravity_vec, gravity, linear_damp, and angular_damp. Configure the collision_layer to 16 and collision_mask to 8. Add a Sprite node for the sword texture, and configure its position and offset. Use an AnimationPlayer for controlling animations, ensuring animation data for each action is connected properly. Include a CollisionPolygon2D for the sword's hit area with its disabled property set to true initially. Additionally, ensure the sword performs collision with objects having appropriate layers, and the attack animations are played based on the respective conditions during gameplay",
+        "output": "train52.tscn"
+    },
+    {
+        "prompt": "attaching custom scripts to nodes",
+        "output": "train53.tscn"
+    },
+    {
+        "prompt": "referencing prebuilt scene files",
+        "output": "train54.tscn"
+    },
+    {
+        "prompt": "assigning materials to nodes",
+        "output": "train55.tscn"
+    },
+    {
+        "prompt": "referencing shader scripts",
+        "output": "train56.tscn"
+    },
+    {
+        "prompt": "referencing image assets used as textures",
+        "output": "train57.tscn"
+    },
+    {
+        "prompt": "referencing animation resources",
+        "output": "train58.tscn"
+    },
+    {
+        "prompt": "3D meshes",
+        "output": "train59.tscn"
+    },
+    {
+        "prompt": "referencing font files",
+        "output": "train60.tscn"
+    },
+    {
+        "prompt": "referencing audio files",
+        "output": "train61.tscn"
+    },
+    {
+        "prompt": "referencing environment settings",
+        "output": "train62.tscn"
+    },
+    {
+        "prompt": "curve resources",
+        "output": "train63.tscn"
+    },
+    {
+        "prompt": "referencing animation state machines",
+        "output": "train64.tscn"
+    },
+    {
+        "prompt": "referencing materials specific to particles",
+        "output": "train65.tscn"
+    },
+    {
+        "prompt": "referencing themes used in UI design",
+        "output": "train66.tscn"
+    },
+    {
+        "prompt": "materials that define physics properties like friction or bounce",
+        "output": "train67.tscn"
+    },
+    {
+        "prompt": "frame-by-frame animations for 2D sprites",
+        "output": "train68.tscn"
+    },
+    {
+        "prompt": "Create a 2D scene with a Sprite node displaying an image of a tree",
+        "output": "train69.tscn"
+    },
+    {
+        "prompt": "Generate a 3D scene with a MeshInstance node using a cube mesh and attach a red material to it.",
+        "output": "train70.tscn"
+    },
+    {
+        "prompt": "Add a Label to display the text 'Hello, Godot!' at the center of the screen.",
+        "output": "train71.tscn"
+    },
+    {
+        "prompt": "Create a Button labeled 'Click Me!' and attach a script that prints 'Button clicked!' when pressed.",
+        "output": "train72.tscn"
+    },
+    {
+        "prompt": "Generate a scene with a Camera2D node, set it to current, and enable smoothing.",
+        "output": "train73.tscn"
+    },
+    {
+        "prompt": "Create a scene with a Node2D parent and two Sprite child nodes: one with a star texture and another with a moon texture.",
+        "output": "train74.tscn"
+    },
+    {
+        "prompt": "Generate a 3D scene with a Spatial node as the parent, a DirectionalLight as a child, and an AnimatedSprite3D node for animation playback.",
+        "output": "train75.tscn"
+    },
+    {
+        "prompt": "Add a CanvasLayer with a child ProgressBar displaying 75% progress.",
+        "output": "train76.tscn"
+    },
+    {
+        "prompt": "Create a Control node with two child nodes: a VBoxContainer and a Label displaying 'Welcome!' inside the container.",
+        "output": "train77.tscn"
+    },
+    {
+        "prompt": "Generate a Node2D with a child Area2D and attach a collision shape to the Area2D.",
+        "output": "train78.tscn"
+    },
+    {
+        "prompt": "Create a Sprite node with the 'player.png' texture and scale it to 1.5 times its original size.",
+        "output": "train79.tscn"
+    },
+    {
+        "prompt": "Add an AudioStreamPlayer to play 'background_music.ogg' in a loop.",
+        "output": "train80.tscn"
+    },
+    {
+        "prompt": "Generate a Path2D with a PathFollow2D child following a circular curve.",
+        "output": "train81.tscn"
+    }
+]

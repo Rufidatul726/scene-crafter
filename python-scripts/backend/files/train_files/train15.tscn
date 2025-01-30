@@ -1,0 +1,8 @@
+[gd_scene load_steps=1 format=3 uid="uid://abcd5678"]
+
+[node name="MainMenu" type="Control"]
+[node name="PlayButton" type="Button" parent="MainMenu"]
+text = "Play"
+
+[node name="ExitButton" type="Button" parent="MainMenu"]
+text = "Exit"

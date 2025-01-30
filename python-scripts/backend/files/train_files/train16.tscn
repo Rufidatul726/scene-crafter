@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://xyzo9876"]
+
+[node name="Environment" type="Node2D"]
+[node name="Background" type="Sprite" parent="Environment"]
+texture = ExtResource("res://background.png")
+
+[node name="FloorTiles" type="TileMap" parent="Environment"]
+tile_set = ExtResource("res://tileset.tres")

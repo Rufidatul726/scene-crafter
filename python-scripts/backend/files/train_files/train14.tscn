@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://abcd1234"]
+
+[node name="Player" type="KinematicBody2D"]
+[node name="Sprite" type="Sprite" parent="Player"]
+texture = ExtResource("res://player.png")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player"]
+shape = SubResource(1)
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2(16, 16)

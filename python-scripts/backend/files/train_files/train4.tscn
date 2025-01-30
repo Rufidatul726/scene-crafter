@@ -1,0 +1,6 @@
+[node name="Skeleton3D" type="Skeleton3D" parent="PlayerModel/Robot_Skeleton" index="0"]
+bones/1/position = Vector3(0.114471, 2.19771, -0.197845)
+bones/1/rotation = Quaternion(0.191422, -0.0471201, -0.00831942, 0.980341)
+bones/2/position = Vector3(-2.59096e-05, 0.236002, 0.000347473)
+bones/2/rotation = Quaternion(-0.0580488, 0.0310587, -0.0085914, 0.997794)
+bones/2/scale = Vector3(0.9276, 0.9276, 0.9276)

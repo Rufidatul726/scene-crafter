@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://d3mu4oj16wp13"]
+
+[node name="Label" type="Label"]
+anchors_preset = -1
+anchor_right = 0.999
+anchor_bottom = 1.0
+offset_right = 0.151855
+offset_bottom = 1.0
+text = "Hello, Godot"
+horizontal_alignment = 1
+vertical_alignment = 1

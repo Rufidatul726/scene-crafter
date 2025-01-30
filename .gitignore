@@ -167,7 +167,6 @@ secrets.gd
 project_directory/
 cache_directory/
 
-train_files/
 scene-crafter-generated-scene/
 
 models/

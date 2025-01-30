@@ -53,7 +53,7 @@ async def generate_scene(request: Request):
         if not prompt:
             raise HTTPException(status_code=400, detail="Input text missing")
         # Load the model and tokenizer
-        model_name = "./outputs/trained_model"
+        model_name = "./models/trained_model"
         tokenizer = AutoTokenizer.from_pretrained(model_name)
         model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
@@ -64,7 +64,7 @@ async def generate_scene(request: Request):
         tscn_content = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
         tscn_content=validate(scene_content=tscn_content, path=path, prompt=prompt)
-        script_content= process_prompt(prompt= scene_content)
+        # script_content= process_prompt(prompt= scene_content)
         
 
         # Save the .tscn file

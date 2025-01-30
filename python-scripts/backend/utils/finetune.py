@@ -16,6 +16,7 @@ def train():
     print(log_file_dir)
 
     model_dir = os.path.join(back_dir, "models", "trained_model")
+    os.makedirs(model_dir, exist_ok=True)
     print(model_dir)
 
     data = []
